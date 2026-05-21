@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Ecosystem — Customer View</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0d14;
+  --surface: #111520;
+  --surface2: #171c2b;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(99,179,255,0.4);
+  --text: #e8edf8;
+  --text-muted: #7a8499;
+  --text-dim: #4a5268;
+  --blue: #3b8bd4;
+  --blue-bright: #63b3ff;
+  --teal: #1db88a;
+  --teal-bright: #3ddba8;
+  --amber: #e8a830;
+  --amber-bright: #f5c842;
+  --coral: #e05a38;
+  --coral-bright: #f07050;
+  --purple: #7b6fe0;
+  --purple-bright: #a090ff;
+  --pink: #d45380;
+  --green: #5aad4e;
+  --font-head: 'Sora', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-head);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.bg-grid {
+  position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(59,139,212,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,139,212,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
+}
+.container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* Header */
+.header { padding: 48px 0 32px; text-align: center; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(59,139,212,0.12); border: 1px solid rgba(59,139,212,0.25); border-radius: 20px; padding: 4px 14px; font-size: 11px; color: var(--blue-bright); font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue-bright); display: inline-block; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+h1 span { color: var(--blue-bright); }
+.subtitle { margin-top: 12px; color: var(--text-muted); font-size: 15px; font-weight: 300; max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+/* Ecosystem map */
+.eco-map { margin: 48px 0 32px; position: relative; }
+.map-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+
+/* Tier rows */
+.tier { display: flex; gap: 12px; margin-bottom: 12px; align-items: stretch; }
+.tier-label { writing-mode: vertical-rl; font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; transform: rotate(180deg); padding: 0 4px; opacity: 0.5; white-space: nowrap; min-width: 18px; }
+
+/* Connector lines between tiers */
+.connectors { position: relative; height: 24px; margin-left: 22px; }
+.connectors svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* Nodes */
+.node {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+.node::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 10px 10px 0 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.node:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+.node:hover::before { opacity: 1; }
+.node.active { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.node.active::before { opacity: 1; }
+
+/* Color variants */
+.node.blue::before { background: var(--blue-bright); }
+.node.blue.active, .node.blue:hover { box-shadow: 0 0 24px rgba(99,179,255,0.12); }
+.node.teal::before { background: var(--teal-bright); }
+.node.teal.active, .node.teal:hover { box-shadow: 0 0 24px rgba(61,219,168,0.12); }
+.node.amber::before { background: var(--amber-bright); }
+.node.amber.active, .node.amber:hover { box-shadow: 0 0 24px rgba(245,200,66,0.12); }
+.node.coral::before { background: var(--coral-bright); }
+.node.coral.active, .node.coral:hover { box-shadow: 0 0 24px rgba(240,112,80,0.12); }
+.node.purple::before { background: var(--purple-bright); }
+.node.purple.active, .node.purple:hover { box-shadow: 0 0 24px rgba(160,144,255,0.12); }
+.node.green::before { background: var(--green); }
+.node.green.active, .node.green:hover { box-shadow: 0 0 24px rgba(90,173,78,0.12); }
+.node.pink::before { background: var(--pink); }
+.node.pink.active, .node.pink:hover { box-shadow: 0 0 24px rgba(212,83,128,0.12); }
+
+.node-icon { font-size: 18px; margin-bottom: 8px; display: block; }
+.node-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; margin-bottom: 3px; }
+.node-desc { font-size: 10px; color: var(--text-muted); line-height: 1.4; font-family: var(--font-mono); }
+
+/* Connections row */
+.connections-row { display: flex; gap: 12px; margin-left: 22px; margin-bottom: 0px; }
+.conn-line { flex: 1; display: flex; align-items: center; justify-content: center; }
+.conn-line svg { width: 100%; height: 28px; }
+
+/* External integrations band */
+.ext-band { margin: 16px 0 0; }
+.ext-title { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; margin-left: 22px; }
+.ext-row { display: flex; gap: 8px; margin-left: 22px; flex-wrap: wrap; }
+.ext-chip {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.ext-chip:hover, .ext-chip.active { background: rgba(255,255,255,0.06); color: var(--text); border-color: rgba(255,255,255,0.15); }
+.ext-chip .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+/* Detail panel */
+.detail-panel {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-top: 24px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.panel-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.panel-icon { font-size: 24px; }
+.panel-title { font-size: 18px; font-weight: 700; }
+.panel-subtitle { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.panel-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+@media (max-width: 700px) { .panel-body { grid-template-columns: 1fr; } }
+.panel-section { padding: 20px 24px; }
+.panel-section + .panel-section { border-left: 1px solid var(--border); }
+@media (max-width: 700px) { .panel-section + .panel-section { border-left: none; border-top: 1px solid var(--border); } }
+.section-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+.value-list { list-style: none; }
+.value-list li { font-size: 13px; color: var(--text-muted); line-height: 1.6; padding: 5px 0; padding-left: 16px; position: relative; border-bottom: 1px solid var(--border); }
+.value-list li:last-child { border-bottom: none; }
+.value-list li::before { content: '→'; position: absolute; left: 0; color: var(--blue-bright); font-family: var(--font-mono); font-size: 11px; top: 6px; }
+.integration-grid { display: flex; flex-direction: column; gap: 8px; }
+.int-item { background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.int-category { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+.int-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.int-examples { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.int-ex { background: rgba(255,255,255,0.04); border-radius: 4px; padding: 2px 7px; font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 32px 0 16px 22px; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+.leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+.close-btn { margin-left: auto; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; padding: 4px 10px; font-size: 12px; font-family: var(--font-mono); transition: all 0.2s; }
+.close-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+.hint { text-align: center; font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="container">
+  <div class="header">
+    <div class="badge">Customer Reference Architecture</div>
+    <h1>Docker <span>Ecosystem</span> Map</h1>
+    <p class="subtitle">How Docker's platform components connect — and how your team integrates them with the tools you already use.</p>
+  </div>
+
+  <div class="eco-map">
+    <div class="map-label">// ecosystem layers — click any component to explore</div>
+
+    <!-- Tier 1: Developer experience -->
+    <div class="tier">
+      <div class="tier-label">Dev experience</div>
+      <div class="node blue" data-id="desktop" onclick="select(this)">
+        <span class="node-icon">🖥</span>
+        <div class="node-name">Docker Desktop</div>
+        <div class="node-desc">Local dev environment</div>
+      </div>
+      <div class="node blue" data-id="devenvs" onclick="select(this)">
+        <span class="node-icon">⚙️</span>
+        <div class="node-name">Dev Environments</div>
+        <div class="node-desc">Reproducible workspaces</div>
+      </div>
+      <div class="node blue" data-id="cli" onclick="select(this)">
+        <span class="node-icon">></span>
+        <div class="node-name">Docker CLI</div>
+        <div class="node-desc">Command-line control</div>
+      </div>
+      <div class="node blue" data-id="extensions" onclick="select(this)">
+        <span class="node-icon">🔌</span>
+        <div class="node-name">Docker Extensions</div>
+        <div class="node-desc">Marketplace plugins</div>
+      </div>
+    </div>
+
+    <!-- Tier 2: Core runtime -->
+    <div class="tier">
+      <div class="tier-label">Core runtime</div>
+      <div class="node teal" data-id="engine" onclick="select(this)">
+        <span class="node-icon">⚡</span>
+        <div class="node-name">Docker Engine</div>
+        <div class="node-desc">Container runtime daemon</div>
+      </div>
+      <div class="node teal" data-id="compose" onclick="select(this)">
+        <span class="node-icon">🗂</span>
+        <div class="node-name">Docker Compose</div>
+        <div class="node-desc">Multi-container orchestration</div>
+      </div>
+      <div class="node teal" data-id="buildkit" onclick="select(this)">
+        <span class="node-icon">🏗</span>
+        <div class="node-name">BuildKit</div>
+        <div class="node-desc">Next-gen image builder</div>
+      </div>
+      <div class="node teal" data-id="containerd" onclick="select(this)">
+        <span class="node-icon">📦</span>
+        <div class="node-name">containerd</div>
+        <div class="node-desc">Industry-standard runtime</div>
+      </div>
+    </div>
+
+    <!-- Tier 3: Images & distribution -->
+    <div class="tier">
+      <div class="tier-label">Images</div>
+      <div class="node amber" data-id="hub" onclick="select(this)">
+        <span class="node-icon">🌐</span>
+        <div class="node-name">Docker Hub</div>
+        <div class="node-desc">Public + private registry</div>
+      </div>
+      <div class="node amber" data-id="scout" onclick="select(this)">
+        <span class="node-icon">🔍</span>
+        <div class="node-name">Docker Scout</div>
+        <div class="node-desc">Supply chain security</div>
+      </div>
+      <div class="node amber" data-id="officialimages" onclick="select(this)">
+        <span class="node-icon">✅</span>
+        <div class="node-name">Official Images</div>
+        <div class="node-desc">Verified base images</div>
+      </div>
+      <div class="node amber" data-id="dhi" onclick="select(this)">
+        <span class="node-icon">🏢</span>
+        <div class="node-name">Hardened Images (DHI)</div>
+        <div class="node-desc">Enterprise-grade, minimal</div>
+      </div>
+    </div>
+
+    <!-- Tier 4: Security & governance -->
+    <div class="tier">
+      <div class="tier-label">Security</div>
+      <div class="node coral" data-id="accesstokens" onclick="select(this)">
+        <span class="node-icon">🔑</span>
+        <div class="node-name">Access Tokens & SSO</div>
+        <div class="node-desc">Identity & auth controls</div>
+      </div>
+      <div class="node coral" data-id="orgmgmt" onclick="select(this)">
+        <span class="node-icon">🏛</span>
+        <div class="node-name">Org & Team Management</div>
+        <div class="node-desc">RBAC & seat management</div>
+      </div>
+      <div class="node coral" data-id="audit" onclick="select(this)">
+        <span class="node-icon">📋</span>
+        <div class="node-name">Audit Logs</div>
+        <div class="node-desc">Compliance & visibility</div>
+      </div>
+      <div class="node coral" data-id="imagepolicy" onclick="select(this)">
+        <span class="node-icon">🛡</span>
+        <div class="node-name">Image Access Mgmt</div>
+        <div class="node-desc">Registry policy controls</div>
+      </div>
+    </div>
+
+    <!-- External integrations -->
+    <div class="ext-band">
+      <div class="ext-title">// customer integrations — your existing toolchain connects here</div>
+      <div class="ext-row">
+        <div class="ext-chip" data-ext="idp" onclick="selectExt(this)"><span class="dot" style="background:#a090ff"></span>IDP / SSO</div>
+        <div class="ext-chip" data-ext="ci" onclick="selectExt(this)"><span class="dot" style="background:#3ddba8"></span>CI / CD</div>
+        <div class="ext-chip" data-ext="obs" onclick="selectExt(this)"><span class="dot" style="background:#63b3ff"></span>Observability</div>
+        <div class="ext-chip" data-ext="iac" onclick="selectExt(this)"><span class="dot" style="background:#f5c842"></span>Infrastructure as Code</div>
+        <div class="ext-chip" data-ext="hosting" onclick="selectExt(this)"><span class="dot" style="background:#f07050"></span>Hosting / Cloud</div>
+        <div class="ext-chip" data-ext="security" onclick="selectExt(this)"><span class="dot" style="background:#d45380"></span>Security scanning</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint">↑ Click any component or integration to see value and how it connects to your workflow</div>
+
+  <div class="detail-panel" id="detail" style="display:none"></div>
+</div>
+
+<script>
+const DATA = {
+  desktop: {
+    icon: '🖥', name: 'Docker Desktop', color: '#63b3ff',
+    tagline: 'The all-in-one local development environment for containers',
+    values: [
+      'One-click installer brings Docker Engine, Compose, BuildKit, and Kubernetes to Mac, Windows, and Linux',
+      'GUI dashboard for managing containers, images, volumes, and networks without memorizing CLI commands',
+      'Dev Environments integration lets teams share a reproducible workspace as a single Git URL',
+      'Built-in resource controls (CPU, memory, disk) prevent local machine slowdown during heavy builds',
+      'Extensions marketplace lets you add observability, security scanning, and database tooling directly in the UI'
+    ],
+    integrations: [
+      { cat: 'IDP / SSO', desc: 'Enforce company SSO login (Okta, Azure AD, Google Workspace) so every developer authenticates with org credentials', examples: ['Okta', 'Azure AD', 'Google Workspace', 'SAML 2.0'] },
+      { cat: 'Observability', desc: 'Extensions for Datadog, Grafana, and Jaeger let you tail container logs and traces directly from the Desktop UI', examples: ['Datadog', 'Grafana', 'Jaeger'] },
+      { cat: 'Registry / Hosting', desc: 'Docker Desktop ships pre-configured to push/pull from Docker Hub; configure additional registries (ECR, GCR, ACR) in one setting', examples: ['ECR', 'GCR', 'ACR', 'Harbor'] }
+    ]
+  },
+  devenvs: {
+    icon: '⚙️', name: 'Dev Environments', color: '#63b3ff',
+    tagline: 'Reproducible, shareable development workspaces from a single URL',
+    values: [
+      'Codify the full development environment (runtime, dependencies, config) in a compose.yaml or devcontainer spec',
+      'Share a workspace via Git URL — teammates clone once and get an identical environment in minutes',
+      'Isolates project dependencies so switching between Node 16 and Node 20 projects doesn\'t break anything',
+      'Works with VS Code and JetBrains IDEs via remote container support',
+      'Eliminates "works on my machine" bugs by making the dev environment as reproducible as the production image'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'The same compose.yaml used locally can drive CI pipelines, ensuring dev and CI environments are identical', examples: ['GitHub Actions', 'GitLab CI', 'CircleCI'] },
+      { cat: 'IaC', desc: 'Devcontainer configs can be version-controlled alongside Terraform/Pulumi infra definitions for full env-as-code', examples: ['Terraform', 'Pulumi', 'Ansible'] },
+      { cat: 'Hosting', desc: 'Dev environments that mirror production containers reduce drift between local and cloud-deployed services', examples: ['AWS ECS', 'GCP Cloud Run', 'Azure Container Apps'] }
+    ]
+  },
+  cli: {
+    icon: '>', name: 'Docker CLI', color: '#63b3ff',
+    tagline: 'The primary interface for building, running, and managing containers',
+    values: [
+      'Full programmatic control over the Docker daemon — every Desktop action maps to a CLI command',
+      'Scriptable for automation: pipe docker commands into shell scripts, Makefiles, or CI jobs',
+      'Context switching allows one CLI installation to manage local, remote, and cloud container hosts',
+      'Plugin architecture supports docker buildx, docker compose, and third-party extensions as subcommands',
+      'Outputs machine-readable JSON for integration with monitoring scripts and dashboards'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'CI pipelines call docker build and docker push natively; most runners ship Docker CLI pre-installed', examples: ['GitHub Actions', 'Jenkins', 'GitLab CI', 'Buildkite'] },
+      { cat: 'IaC', desc: 'Terraform Docker provider and Ansible docker_container module both call the CLI under the hood', examples: ['Terraform', 'Ansible', 'Chef'] },
+      { cat: 'Observability', desc: 'docker stats, docker events, and docker logs feed into log shippers and metrics collectors', examples: ['Prometheus', 'Fluentd', 'Vector', 'Loki'] }
+    ]
+  },
+  extensions: {
+    icon: '🔌', name: 'Docker Extensions', color: '#63b3ff',
+    tagline: 'Marketplace of tools embedded directly into Docker Desktop',
+    values: [
+      'Over 80 published extensions covering databases, observability, security, and networking',
+      'Developers access external tools without leaving Docker Desktop, reducing context switching',
+      'Partners can publish extensions to reach millions of Docker Desktop users directly',
+      'Extension SDK lets you build internal tooling that embeds in the Docker Desktop UI',
+      'Extensions communicate with the Docker Engine API, enabling powerful container-aware tooling'
+    ],
+    integrations: [
+      { cat: 'Observability', desc: 'Grafana, Portainer, and Datadog extensions surface metrics and logs without separate agent setup', examples: ['Grafana', 'Datadog', 'Portainer', 'Dynatrace'] },
+      { cat: 'Security', desc: 'Snyk, Trivy, and Anchore extensions scan images on build and flag CVEs before code leaves the laptop', examples: ['Snyk', 'Trivy', 'Anchore', 'Aqua'] },
+      { cat: 'Database', desc: 'Database GUI extensions (Mongo Compass, pgAdmin) connect to containerized databases in one click', examples: ['Mongo Compass', 'pgAdmin', 'Redis Insight'] }
+    ]
+  },
+  engine: {
+    icon: '⚡', name: 'Docker Engine', color: '#3ddba8',
+    tagline: 'The core open-source container runtime that powers everything',
+    values: [
+      'Open-source daemon (dockerd) that manages the container lifecycle: build, run, stop, remove',
+      'Implements the OCI runtime spec, ensuring portability across any compliant container platform',
+      'Linux-native networking, storage drivers, and cgroup isolation give containers predictable performance',
+      'REST API makes it programmable from any language or automation tool',
+      'Foundation layer that Docker Desktop, Compose, and Kubernetes all sit on top of'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'CI runners with Docker Engine installed can execute any docker build or run command; DinD (Docker-in-Docker) enables full pipeline isolation', examples: ['GitHub Actions', 'GitLab Runner', 'Jenkins', 'TeamCity'] },
+      { cat: 'Observability', desc: 'Engine exposes /metrics endpoint (Prometheus format) and streaming events API for runtime telemetry', examples: ['Prometheus', 'cAdvisor', 'Datadog Agent', 'New Relic'] },
+      { cat: 'IaC', desc: 'Terraform Docker provider provisions containers, networks, and volumes as declarative infrastructure', examples: ['Terraform', 'Pulumi', 'Crossplane'] }
+    ]
+  },
+  compose: {
+    icon: '🗂', name: 'Docker Compose', color: '#3ddba8',
+    tagline: 'Define and run multi-container applications from a single YAML file',
+    values: [
+      'Declare your entire application stack — app server, database, cache, queue — in one compose.yaml',
+      'docker compose up spins up all services with correct networking and dependency ordering',
+      'Environment-specific overrides (compose.override.yaml) let you customize for dev, staging, and prod',
+      'Built-in healthcheck integration prevents services from starting before their dependencies are ready',
+      'Version-controlled alongside application code, making infrastructure changes reviewable and auditable'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'Compose files drive integration test environments in CI — spin up a full stack, run tests, tear down in seconds', examples: ['GitHub Actions', 'GitLab CI', 'CircleCI', 'Drone'] },
+      { cat: 'Hosting', desc: 'Compose spec is compatible with Amazon ECS (via compose-ecs), Google Cloud Run, and Fly.io for production deployment', examples: ['AWS ECS', 'Fly.io', 'Render', 'Railway'] },
+      { cat: 'IaC', desc: 'Compose can be the app-layer complement to Terraform (infra) — together they describe the full deployment', examples: ['Terraform', 'Pulumi', 'CDK'] }
+    ]
+  },
+  buildkit: {
+    icon: '🏗', name: 'BuildKit', color: '#3ddba8',
+    tagline: 'The modern, parallel, cache-optimized image build engine',
+    values: [
+      'Parallel build execution — independent Dockerfile stages run concurrently, slashing build times',
+      'Advanced layer caching with remote cache support (ECR, GCR cache backends) for fast CI builds',
+      'Secret mounting (--mount=type=secret) prevents credentials ever landing in image layers',
+      'Multi-platform builds via docker buildx produce AMD64 and ARM images from a single command',
+      'Build provenance and SBOM attestations support software supply chain security requirements'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'GitHub Actions and GitLab CI use BuildKit natively; remote cache backends cut CI build times by 60–80%', examples: ['GitHub Actions', 'GitLab CI', 'Buildkite', 'CircleCI'] },
+      { cat: 'Security', desc: 'SBOM attestations generated at build time feed into Scout and third-party vulnerability scanners', examples: ['Docker Scout', 'Snyk', 'Grype', 'Trivy'] },
+      { cat: 'Registry', desc: 'BuildKit pushes directly to any OCI-compliant registry with cache manifests for incremental re-use', examples: ['Docker Hub', 'ECR', 'GCR', 'Harbor', 'Artifactory'] }
+    ]
+  },
+  containerd: {
+    icon: '📦', name: 'containerd', color: '#3ddba8',
+    tagline: 'Industry-standard container runtime under the Docker hood',
+    values: [
+      'CNCF-graduated runtime that manages the full container lifecycle with a minimal attack surface',
+      'Used by Docker Engine, Kubernetes, and cloud provider managed services (EKS, GKE, AKS) — no vendor lock-in',
+      'Snapshotter plugins support overlayfs, btrfs, and ZFS for flexible storage performance tuning',
+      'CRI compatibility means containerd can replace Docker Engine as the Kubernetes node runtime',
+      'gRPC API enables programmatic container management from custom operators and automation tools'
+    ],
+    integrations: [
+      { cat: 'Hosting', desc: 'Every major cloud Kubernetes service (EKS, GKE, AKS) uses containerd as the node runtime — same runtime from laptop to cloud', examples: ['EKS', 'GKE', 'AKS', 'Rancher', 'k3s'] },
+      { cat: 'Security', desc: 'Runtime security tools (Falco, Tracee) hook into containerd\'s event stream for behavioral threat detection', examples: ['Falco', 'Tracee', 'Sysdig', 'Aqua Runtime'] },
+      { cat: 'Observability', desc: 'containerd exposes runtime metrics (image pulls, container starts, failures) to Prometheus', examples: ['Prometheus', 'Grafana', 'OpenTelemetry'] }
+    ]
+  },
+  hub: {
+    icon: '🌐', name: 'Docker Hub', color: '#f5c842',
+    tagline: 'The world\'s largest container registry with 14M+ public images',
+    values: [
+      'Hosts 14M+ images; the default pull registry for docker pull without a fully-qualified registry path',
+      'Automated builds trigger from GitHub or Bitbucket pushes, building and publishing images on every commit',
+      'Private repositories provide team-scoped image storage with fine-grained access controls',
+      'Webhooks notify downstream systems (CI/CD, Slack, PagerDuty) when a new image tag is pushed',
+      'Rate limiting on free accounts is bypassed with authenticated pulls, improving CI reliability at scale'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'Most CI platforms (GitHub Actions, GitLab, Jenkins) have native Docker Hub login steps for authenticated pulls and pushes', examples: ['GitHub Actions', 'GitLab CI', 'Jenkins', 'CircleCI'] },
+      { cat: 'Hosting', desc: 'Cloud platforms (ECS, Cloud Run, Fly.io) pull deployment images directly from Hub; webhooks can trigger auto-redeploy on push', examples: ['AWS ECS', 'GCP Cloud Run', 'Fly.io', 'Heroku'] },
+      { cat: 'Security', desc: 'Hub integrates with Scout to surface CVE data on every pull, and with Snyk for automated remediation PRs', examples: ['Docker Scout', 'Snyk', 'JFrog Xray'] }
+    ]
+  },
+  scout: {
+    icon: '🔍', name: 'Docker Scout', color: '#f5c842',
+    tagline: 'Continuous software supply chain security for container images',
+    values: [
+      'Generates a real-time Software Bill of Materials (SBOM) for every image layer, not just the final image',
+      'Maps CVEs to specific packages and recommends the minimal base image upgrade that fixes them',
+      'Policy framework lets teams define acceptable risk thresholds and fail CI on violations',
+      'Integrates into the developer workflow at build time — not just at registry push or deployment',
+      'Tracks remediation progress over time with dashboards showing vulnerability trends across your image fleet'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'docker scout cves and docker scout policy run in any CI pipeline and return exit codes for pass/fail gating', examples: ['GitHub Actions', 'GitLab CI', 'Jenkins', 'Buildkite'] },
+      { cat: 'Security', desc: 'Scout data enriches SIEM and vulnerability management platforms via webhook or API export', examples: ['Splunk', 'Wiz', 'Snyk', 'Prisma Cloud'] },
+      { cat: 'Registry', desc: 'Works across Docker Hub and private registries — Scout analyzes any OCI-compliant image regardless of where it lives', examples: ['Docker Hub', 'ECR', 'GCR', 'Harbor', 'Artifactory'] }
+    ]
+  },
+  officialimages: {
+    icon: '✅', name: 'Official Images', color: '#f5c842',
+    tagline: 'Curated, maintained, and security-reviewed base images from Docker',
+    values: [
+      '200+ Official Images for popular runtimes and databases — maintained by language/tool communities under Docker stewardship',
+      'Continuously rebuilt when upstream CVEs are patched, keeping base images current with minimal team effort',
+      'Slim and alpine variants reduce image surface area dramatically (e.g., node:alpine vs node reduces size by ~70%)',
+      'Best-practice Dockerfiles serve as reference implementations for your own image authoring',
+      'Docker Hub pull count and star metrics signal community trust and adoption level'
+    ],
+    integrations: [
+      { cat: 'Security', desc: 'Scout tracks CVE status on all Official Images; teams subscribed to Hub notifications receive alerts when base images need rebuilding', examples: ['Docker Scout', 'Dependabot', 'Renovate'] },
+      { cat: 'CI / CD', desc: 'Pin FROM versions in Dockerfiles; Renovate or Dependabot can auto-PR base image version bumps into your pipeline', examples: ['Renovate', 'Dependabot', 'GitHub Actions'] },
+      { cat: 'Hosting', desc: 'Official Images are pre-trusted on ECR Public, GCR, and other mirrors — no re-scanning overhead on first pull in cloud environments', examples: ['ECR Public', 'GCR', 'ACR'] }
+    ]
+  },
+  dhi: {
+    icon: '🏢', name: 'Docker Hardened Images (DHI)', color: '#f5c842',
+    tagline: 'Minimal, distroless enterprise images built for security and compliance',
+    values: [
+      'Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; dramatically reduces attack surface',
+      'CVE-near-zero guarantee: Docker patches DHIs within 24h of a disclosed vulnerability in a base dependency',
+      'Signed with Cosign and include SBOM and provenance attestations for full supply chain traceability',
+      'Drop-in replacements for popular Official Images — same tags, same interface, hardened internals',
+      'Compliance-ready for SOC 2, PCI-DSS, and NIST 800-190 container security requirements'
+    ],
+    integrations: [
+      { cat: 'Security', desc: 'DHI provenance attestations can be verified by policy engines (OPA, Kyverno) at deploy time to enforce signed-image-only policies', examples: ['OPA', 'Kyverno', 'Cosign', 'Sigstore'] },
+      { cat: 'Hosting', desc: 'Ideal base for workloads on EKS, GKE, or AKS with PodSecurityPolicy or OPA Gatekeeper enforcing minimal-image requirements', examples: ['EKS', 'GKE', 'AKS'] },
+      { cat: 'CI / CD', desc: 'Replace FROM ubuntu or FROM node in Dockerfiles with DHI equivalents and add Scout policy checks to CI for ongoing compliance', examples: ['Docker Scout', 'GitHub Actions', 'GitLab CI'] }
+    ]
+  },
+  accesstokens: {
+    icon: '🔑', name: 'Access Tokens & SSO', color: '#f07050',
+    tagline: 'Secure, federated identity for Docker across your org',
+    values: [
+      'Personal Access Tokens (PATs) replace passwords in CI/CD pipelines — rotatable, scoped, and auditable',
+      'SAML/OIDC SSO integration ties Docker login to your existing IdP (Okta, Azure AD, Google Workspace)',
+      'SCIM provisioning automatically creates and deprovisions Docker accounts when HR onboards or offboards staff',
+      'Token scopes limit permissions to read-only or specific repositories, enforcing least-privilege access',
+      'SSO enforcement policy prevents developers from using personal accounts for org resources'
+    ],
+    integrations: [
+      { cat: 'IDP / SSO', desc: 'Native SAML 2.0 and OIDC support for all major enterprise IdPs; Docker Business plan unlocks org-wide SSO enforcement', examples: ['Okta', 'Azure AD', 'Google Workspace', 'Ping Identity', 'OneLogin'] },
+      { cat: 'CI / CD', desc: 'Store PATs as secrets in your CI platform; rotate on a schedule using the Docker Hub API without updating every pipeline manually', examples: ['GitHub Secrets', 'GitLab CI Variables', 'HashiCorp Vault', 'AWS Secrets Manager'] },
+      { cat: 'Security', desc: 'PAT audit events flow into SIEM platforms via Docker audit log export for anomaly detection and compliance reporting', examples: ['Splunk', 'Sumo Logic', 'Elastic SIEM'] }
+    ]
+  },
+  orgmgmt: {
+    icon: '🏛', name: 'Org & Team Management', color: '#f07050',
+    tagline: 'RBAC, seat management, and team access for Docker at scale',
+    values: [
+      'Hierarchical orgs → teams → members structure mirrors your company\'s reporting lines in Docker',
+      'Team-level repository permissions (read, write, admin) ensure developers only access what they need',
+      'Seat usage dashboard shows license consumption in real time — no surprise overages',
+      'Owners can enforce settings (required SSO, 2FA, image access policy) across all org members',
+      'API-first management allows org configuration to be scripted and version-controlled as IaC'
+    ],
+    integrations: [
+      { cat: 'IDP / SSO', desc: 'SCIM sync with Okta or Azure AD keeps Docker team membership in sync with your IdP groups automatically', examples: ['Okta SCIM', 'Azure AD SCIM', 'Google Workspace'] },
+      { cat: 'IaC', desc: 'Docker Hub Management API lets you manage orgs, teams, and permissions declaratively via Terraform or custom automation', examples: ['Terraform', 'Ansible', 'Python SDK'] },
+      { cat: 'Security', desc: 'Org-level 2FA enforcement and SSO requirements reduce credential compromise risk across the entire developer fleet', examples: ['Okta MFA', 'Duo', 'Google Authenticator'] }
+    ]
+  },
+  audit: {
+    icon: '📋', name: 'Audit Logs', color: '#f07050',
+    tagline: 'Complete activity trail for compliance, incident response, and oversight',
+    values: [
+      'Records every login, image push/pull, permission change, and org setting modification with timestamp and actor',
+      'Exportable as JSON for ingestion into SIEM platforms and compliance reporting pipelines',
+      'Enables forensic analysis when investigating unauthorized access or accidental data exposure',
+      'Retention and export policies configurable for regulatory requirements (SOC 2, HIPAA, FedRAMP)',
+      'Differentiates human actions from CI/CD automation by token type, supporting cleaner audit trails'
+    ],
+    integrations: [
+      { cat: 'Observability', desc: 'Forward Docker audit logs to your SIEM or log platform for centralized security monitoring and alerting', examples: ['Splunk', 'Elastic SIEM', 'Sumo Logic', 'Datadog SIEM'] },
+      { cat: 'Security', desc: 'Audit data feeds compliance management platforms to generate SOC 2 and ISO 27001 evidence automatically', examples: ['Vanta', 'Drata', 'Secureframe', 'Tugboat Logic'] },
+      { cat: 'IaC', desc: 'Log export automation can be managed via Terraform or scripted API calls, ensuring logs flow to the right destination on org provisioning', examples: ['Terraform', 'AWS S3', 'GCS', 'Azure Blob'] }
+    ]
+  },
+  imagepolicy: {
+    icon: '🛡', name: 'Image Access Management', color: '#f07050',
+    tagline: 'Control which registries and image types developers can pull',
+    values: [
+      'Restrict Docker Desktop users to only pulling from approved registries — block Docker Hub, allow only your private registry',
+      'Prevent use of unofficial or unverified images that may introduce supply chain risks',
+      'Policy enforced at the network level via Docker Desktop, not just an honor system',
+      'Complement to Scout\'s vulnerability policies — IAM controls what comes in, Scout inspects it',
+      'Audit logs record every policy violation attempt for security review'
+    ],
+    integrations: [
+      { cat: 'Security', desc: 'Pair with OPA or Kyverno admission controllers to enforce the same approved-registry policy at Kubernetes deploy time', examples: ['OPA Gatekeeper', 'Kyverno', 'Styra DAS'] },
+      { cat: 'Hosting', desc: 'Point allowed registries at ECR, GCR, or Artifactory to ensure all images go through your enterprise scanning pipeline', examples: ['ECR', 'GCR', 'JFrog Artifactory', 'Harbor'] },
+      { cat: 'IDP / SSO', desc: 'Policy is tied to org membership — developers who authenticate via SSO automatically inherit their team\'s image access policy', examples: ['Okta', 'Azure AD', 'Google Workspace'] }
+    ]
+  }
+};
+
+const EXT_DATA = {
+  idp: {
+    title: 'IDP / SSO integration', color: '#a090ff',
+    desc: 'Docker Business connects to your identity provider for single sign-on, SCIM provisioning, and centralized access management.',
+    touchpoints: [
+      { component: 'Access Tokens & SSO', how: 'SAML/OIDC login, enforced org-wide; SCIM auto-provisions/deprovisions Docker accounts from Okta or Azure AD groups' },
+      { component: 'Org & Team Management', how: 'IdP group membership syncs to Docker teams automatically via SCIM' },
+      { component: 'Docker Desktop', how: 'Developers log in with company SSO credentials; no separate Docker password required' },
+      { component: 'Image Access Mgmt', how: 'Registry access policies are tied to IdP group membership' }
+    ],
+    examples: ['Okta', 'Azure Active Directory', 'Google Workspace', 'Ping Identity', 'OneLogin', 'JumpCloud']
+  },
+  ci: {
+    title: 'CI / CD pipeline integration', color: '#3ddba8',
+    desc: 'Docker is a first-class citizen in modern CI/CD. Every pipeline stage — build, test, scan, push, deploy — has native Docker support.',
+    touchpoints: [
+      { component: 'BuildKit', how: 'docker buildx bake runs multi-platform parallel builds with remote cache backends, cutting CI build time dramatically' },
+      { component: 'Docker Compose', how: 'Compose spins up full application stacks for integration tests, then tears down cleanly after the test run' },
+      { component: 'Docker Scout', how: 'docker scout cves returns exit code 1 on critical CVEs, acting as a CI gate before images are promoted' },
+      { component: 'Docker Hub', how: 'Authenticated pulls with PATs eliminate rate limiting; push new image tags to trigger downstream deployment webhooks' }
+    ],
+    examples: ['GitHub Actions', 'GitLab CI', 'Jenkins', 'CircleCI', 'Buildkite', 'TeamCity', 'Drone']
+  },
+  obs: {
+    title: 'Observability integration', color: '#63b3ff',
+    desc: 'Container-native observability: metrics from the runtime, logs from stdout/stderr, and traces from instrumented services.',
+    touchpoints: [
+      { component: 'Docker Engine', how: 'Prometheus /metrics endpoint and docker stats API expose CPU, memory, network, and I/O per container' },
+      { component: 'containerd', how: 'Runtime events (image pull latency, container start failures) flow to Prometheus via containerd metrics API' },
+      { component: 'Docker Desktop', how: 'Extensions (Grafana, Datadog) embed dashboards directly in the Desktop UI for local visibility' },
+      { component: 'Audit Logs', how: 'Security-relevant Docker events (pushes, access changes) forward to SIEM for centralized monitoring' }
+    ],
+    examples: ['Datadog', 'Grafana + Prometheus', 'New Relic', 'Dynatrace', 'OpenTelemetry', 'Elastic', 'Splunk']
+  },
+  iac: {
+    title: 'Infrastructure as Code integration', color: '#f5c842',
+    desc: 'Manage Docker infrastructure declaratively — containers, networks, volumes, registries, and org settings all configurable as code.',
+    touchpoints: [
+      { component: 'Docker Engine', how: 'Terraform Docker provider provisions containers, images, networks, and volumes as versioned infrastructure' },
+      { component: 'Docker Compose', how: 'compose.yaml is the app-layer IaC complement to Terraform infra — together they describe a full deployment' },
+      { component: 'Org & Team Management', how: 'Docker Hub Management API supports Terraform resources for orgs, teams, and permissions' },
+      { component: 'Dev Environments', how: 'devcontainer.json and compose.yaml version-controlled alongside app code create fully reproducible environments' }
+    ],
+    examples: ['Terraform', 'Pulumi', 'Ansible', 'AWS CDK', 'Crossplane', 'Chef', 'Puppet']
+  },
+  hosting: {
+    title: 'Hosting / Cloud integration', color: '#f07050',
+    desc: 'Docker images and Compose files are the universal deployment artifact — every major cloud platform accepts them natively.',
+    touchpoints: [
+      { component: 'Docker Hub', how: 'Cloud platforms pull deployment images from Hub on release; webhooks trigger auto-redeploy when new tags are pushed' },
+      { component: 'Docker Compose', how: 'Amazon ECS, Fly.io, and Render support Compose file deployment directly for multi-container stacks' },
+      { component: 'containerd', how: 'EKS, GKE, and AKS all run containerd as the node runtime — the same runtime used locally with Docker Engine' },
+      { component: 'BuildKit', how: 'Multi-platform builds produce AMD64 and ARM images in one command, deploying to Graviton (AWS) or Ampere (GCP)' }
+    ],
+    examples: ['AWS ECS / EKS', 'GCP Cloud Run / GKE', 'Azure ACI / AKS', 'Fly.io', 'Render', 'Railway', 'Heroku']
+  },
+  security: {
+    title: 'Security scanning integration', color: '#d45380',
+    desc: 'Docker provides native scanning (Scout) plus open integration points for third-party security platforms at every pipeline stage.',
+    touchpoints: [
+      { component: 'Docker Scout', how: 'Native SBOM generation and CVE mapping at build time; policy framework gates CI on configurable risk thresholds' },
+      { component: 'BuildKit', how: 'Build-time SBOM and provenance attestations provide cryptographic proof of what went into an image' },
+      { component: 'Docker Hardened Images', how: 'Starting from a DHI reduces CVE count at the base layer before your code is even added' },
+      { component: 'Image Access Mgmt', how: 'Restricts pulls to approved registries, preventing supply chain attacks from unofficial or malicious images' }
+    ],
+    examples: ['Snyk', 'Trivy', 'Aqua Security', 'Prisma Cloud', 'Wiz', 'JFrog Xray', 'Grype', 'Anchore']
+  }
+};
+
+let activeNode = null;
+let activeExt = null;
+
+function select(el) {
+  const id = el.dataset.id;
+  if (activeNode === id) {
+    closePanel();
+    return;
+  }
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.ext-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeNode = id;
+  activeExt = null;
+  renderPanel(DATA[id]);
+}
+
+function selectExt(el) {
+  const id = el.dataset.ext;
+  if (activeExt === id) {
+    closePanel();
+    return;
+  }
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.ext-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeExt = id;
+  activeNode = null;
+  renderExtPanel(EXT_DATA[id]);
+}
+
+function closePanel() {
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.ext-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('detail').style.display = 'none';
+  activeNode = null;
+  activeExt = null;
+}
+
+function renderPanel(d) {
+  const panel = document.getElementById('detail');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="panel-header">
+      <span class="panel-icon">${d.icon}</span>
+      <div>
+        <div class="panel-title">${d.name}</div>
+        <div class="panel-subtitle">${d.tagline}</div>
+      </div>
+      <button class="close-btn" onclick="closePanel()">✕ close</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-section">
+        <div class="section-label">// value for your team — 5 key benefits</div>
+        <ul class="value-list">
+          ${d.values.map(v => `<li>${v}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="panel-section">
+        <div class="section-label">// how it integrates with your existing stack</div>
+        <div class="integration-grid">
+          ${d.integrations.map(i => `
+            <div class="int-item">
+              <div class="int-category">${i.cat}</div>
+              <div class="int-desc">${i.desc}</div>
+              <div class="int-examples">${i.examples.map(e => `<span class="int-ex">${e}</span>`).join('')}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderExtPanel(d) {
+  const panel = document.getElementById('detail');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="panel-header">
+      <div>
+        <div class="panel-title" style="color:${d.color}">${d.title}</div>
+        <div class="panel-subtitle">${d.desc}</div>
+      </div>
+      <button class="close-btn" onclick="closePanel()">✕ close</button>
+    </div>
+    <div class="panel-body">
+      <div class="panel-section">
+        <div class="section-label">// docker components this integration touches</div>
+        <div class="integration-grid">
+          ${d.touchpoints.map(t => `
+            <div class="int-item">
+              <div class="int-category">${t.component}</div>
+              <div class="int-desc">${t.how}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="section-label">// compatible platforms & tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+          ${d.examples.map(e => `<span class="int-ex" style="font-size:12px;padding:5px 10px;">${e}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

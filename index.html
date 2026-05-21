@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Ecosystem — Partner View</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0e17;
+  --surface: #111520;
+  --surface2: #161b28;
+  --border: rgba(255,255,255,0.07);
+  --border-mid: rgba(255,255,255,0.15);
+  --text: #e4e8f5;
+  --text-muted: #7a8499;
+  --text-dim: #424960;
+  --blue: #4a9eff;
+  --blue-light: rgba(74,158,255,0.12);
+  --teal: #2dd4a0;
+  --amber: #f0b429;
+  --coral: #f07050;
+  --purple: #a78bfa;
+  --purple-light: rgba(167,139,250,0.15);
+  --font-head: 'Outfit', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 110%;
+  min-height: 100vh;
+  background-image:
+    linear-gradient(rgba(74,158,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,158,255,0.025) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.container { max-width: 1260px; margin: 0 auto; padding: 0 24px 80px; }
+
+.header { padding: 44px 0 28px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: var(--purple-light); border: 1px solid rgba(167,139,250,0.25); border-radius: 4px; padding: 4px 12px; font-size: 10px; color: var(--purple); font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
+.badge::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--purple); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+h1 { font-size: clamp(26px, 3.5vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+h1 span { color: var(--blue); }
+.subtitle { margin-top: 10px; color: var(--text-muted); font-size: 14px; font-weight: 300; max-width: 580px; line-height: 1.6; }
+
+.partner-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; margin-top: 32px; }
+@media (max-width: 800px) { .partner-layout { grid-template-columns: 1fr; } }
+
+.partner-nav { position: sticky; top: 20px; height: fit-content; }
+.nav-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+
+.partner-btn {
+  display: block; width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  color: inherit;
+}
+.partner-btn:hover { border-color: var(--border-mid); }
+.partner-btn.active { border-color: var(--blue); background: rgba(74,158,255,0.08); }
+.partner-btn .p-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.partner-btn .p-icon { font-size: 16px; flex-shrink: 0; }
+.partner-btn .p-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.partner-btn .p-type { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); padding-left: 24px; }
+
+/* Market share mini bar in nav button */
+.p-market { padding-left: 24px; margin-top: 6px; }
+.p-market-label { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); margin-bottom: 3px; }
+.p-players { display: flex; flex-direction: column; gap: 2px; }
+.p-player { display: flex; align-items: center; gap: 5px; }
+.p-player-name { font-size: 9px; font-family: var(--font-mono); color: var(--text-muted); width: 78px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+.p-bar { height: 4px; border-radius: 2px; transition: width 0.4s ease; }
+.p-pct { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); width: 26px; text-align: right; flex-shrink: 0; }
+
+/* partner-btn collapsed: hide market data, show on active */
+.partner-btn:not(.active) .p-market { display: none; }
+.partner-btn.active .p-market { display: block; }
+
+.map-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+
+.tier { display: flex; gap: 8px; margin-bottom: 8px; }
+.tier-label { writing-mode: vertical-rl; font-family: var(--font-mono); font-size: 8px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; transform: rotate(180deg); min-width: 14px; opacity: 0.45; white-space: nowrap; }
+
+.node {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  min-width: 0;
+}
+.node:hover { border-color: var(--border-mid); box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+.node.active { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(74,158,255,0.15); }
+.node.highlighted { background: rgba(74,158,255,0.07); border-color: rgba(74,158,255,0.35); }
+.node-top { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+.node-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.node-name { font-size: 10px; font-weight: 600; color: var(--text); }
+.node-desc { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.3; }
+.node-partner-badge { position: absolute; top: 5px; right: 5px; font-size: 7px; background: var(--purple-light); color: var(--purple); border-radius: 3px; padding: 1px 4px; font-family: var(--font-mono); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.node.highlighted .node-partner-badge { opacity: 1; }
+
+.detail-panel { margin-top: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.dp-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+.dp-icon { font-size: 20px; flex-shrink: 0; }
+.dp-title { font-size: 15px; font-weight: 700; }
+.dp-sub { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.close-btn { margin-left: auto; background: none; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); cursor: pointer; padding: 3px 8px; font-size: 10px; font-family: var(--font-mono); flex-shrink: 0; }
+
+.dp-body { display: grid; grid-template-columns: 1fr 1fr; }
+@media (max-width: 600px) { .dp-body { grid-template-columns: 1fr; } }
+.dp-col { padding: 14px 18px; }
+.dp-col + .dp-col { border-left: 1px solid var(--border); }
+.col-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+
+.value-list { list-style: none; }
+.value-list li { font-size: 12px; color: var(--text-muted); line-height: 1.5; padding: 5px 0 5px 13px; position: relative; border-bottom: 1px solid var(--border); }
+.value-list li:last-child { border-bottom: none; }
+.value-list li::before { content: '▸'; position: absolute; left: 0; color: var(--blue); font-size: 9px; top: 7px; }
+
+.opp-item { background: rgba(255,255,255,0.03); border-radius: 6px; padding: 10px 12px; border-left: 3px solid var(--blue); margin-bottom: 8px; }
+.opp-type { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+.opp-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.opp-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+.opp-tag { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); }
+
+/* Market share panel inside detail */
+.market-panel { padding: 14px 18px; border-top: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+.market-title { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.market-rows { display: flex; flex-direction: column; gap: 7px; }
+.market-row { display: flex; align-items: center; gap: 8px; }
+.market-rank { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); width: 12px; flex-shrink: 0; }
+.market-name { font-size: 11px; font-weight: 600; color: var(--text); width: 100px; flex-shrink: 0; }
+.market-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; }
+.market-bar { height: 6px; border-radius: 3px; }
+.market-pct { font-size: 10px; font-family: var(--font-mono); color: var(--text-muted); width: 32px; text-align: right; flex-shrink: 0; }
+.market-note { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+
+.hint { font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge">Partner Reference Architecture</div>
+    <h1>Docker Ecosystem —<br><span>Partner Opportunity Map</span></h1>
+    <p class="subtitle">Select your partner category to highlight relevant Docker integration surfaces. Click any highlighted component for integration details and market context.</p>
+  </div>
+
+  <div class="partner-layout">
+    <div class="partner-nav">
+      <div class="nav-label">// select partner type</div>
+
+      <button class="partner-btn active" data-partner="isv" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">📦</span><span class="p-name">ISV / Software vendor</span></div>
+        <div class="p-type">Integrate your product with Docker</div>
+        <div class="p-market" data-partner="isv"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="idp" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🔐</span><span class="p-name">Identity provider</span></div>
+        <div class="p-type">Okta, Azure AD, Ping, etc.</div>
+        <div class="p-market" data-partner="idp"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="ci" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🔁</span><span class="p-name">CI/CD platform</span></div>
+        <div class="p-type">GitHub, GitLab, Jenkins, etc.</div>
+        <div class="p-market" data-partner="ci"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="obs" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">📊</span><span class="p-name">Observability platform</span></div>
+        <div class="p-type">Datadog, Grafana, New Relic, etc.</div>
+        <div class="p-market" data-partner="obs"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="hosting" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">☁️</span><span class="p-name">Hosting / Cloud provider</span></div>
+        <div class="p-type">AWS, GCP, Azure, Fly.io, etc.</div>
+        <div class="p-market" data-partner="hosting"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="iac" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🏗</span><span class="p-name">Infrastructure as Code</span></div>
+        <div class="p-type">Terraform, Pulumi, Ansible, etc.</div>
+        <div class="p-market" data-partner="iac"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="security" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🛡</span><span class="p-name">Security / scanning</span></div>
+        <div class="p-type">Snyk, Aqua, Wiz, Trivy, etc.</div>
+        <div class="p-market" data-partner="security"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="ml" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🧠</span><span class="p-name">ML platforms</span></div>
+        <div class="p-type">AWS SageMaker, Vertex AI, etc.</div>
+        <div class="p-market" data-partner="ml"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="ai" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">🤖</span><span class="p-name">AI agents</span></div>
+        <div class="p-type">LangChain, AutoGen, CrewAI, etc.</div>
+        <div class="p-market" data-partner="ai"></div>
+      </button>
+
+      <button class="partner-btn" data-partner="ide" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">💻</span><span class="p-name">IDE / code editors</span></div>
+        <div class="p-type">VS Code, JetBrains, Cursor, etc.</div>
+        <div class="p-market" data-partner="ide"></div>
+      </button>
+    </div>
+
+    <div class="eco-right">
+      <div class="map-label">// docker ecosystem — highlighted nodes = integration surface for selected partner type</div>
+      <p class="hint">Click any highlighted node to see integration details and partnership opportunity</p>
+
+      <div class="tier">
+        <div class="tier-label">Dev exp</div>
+        <div class="node" data-id="desktop" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker Desktop</span></div>
+          <div class="node-desc">Local dev environment</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="devenvs" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Dev Environments</span></div>
+          <div class="node-desc">Reproducible workspaces</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="cli" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker CLI</span></div>
+          <div class="node-desc">Command-line interface</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="extensions" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker Extensions</span></div>
+          <div class="node-desc">Marketplace plugins</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="tier-label">Runtime</div>
+        <div class="node" data-id="engine" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0d7a5c"></span><span class="node-name">Docker Engine</span></div>
+          <div class="node-desc">Container runtime daemon</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="compose" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0d7a5c"></span><span class="node-name">Docker Compose</span></div>
+          <div class="node-desc">Multi-container orchestration</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="buildkit" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0d7a5c"></span><span class="node-name">BuildKit</span></div>
+          <div class="node-desc">Image build engine</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="containerd" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0d7a5c"></span><span class="node-name">containerd</span></div>
+          <div class="node-desc">OCI container runtime</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="tier-label">Images</div>
+        <div class="node" data-id="hub" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Docker Hub</span></div>
+          <div class="node-desc">Public + private registry</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="scout" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Docker Scout</span></div>
+          <div class="node-desc">Supply chain security</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="officialimages" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Official Images</span></div>
+          <div class="node-desc">Verified base images</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="dhi" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Hardened Images (DHI)</span></div>
+          <div class="node-desc">Enterprise minimal images</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="tier-label">Security</div>
+        <div class="node" data-id="accesstokens" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#b83818"></span><span class="node-name">Access Tokens & SSO</span></div>
+          <div class="node-desc">Identity & auth controls</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="orgmgmt" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#b83818"></span><span class="node-name">Org & Team Mgmt</span></div>
+          <div class="node-desc">RBAC & seat management</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="audit" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#b83818"></span><span class="node-name">Audit Logs</span></div>
+          <div class="node-desc">Compliance & visibility</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="imagepolicy" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#b83818"></span><span class="node-name">Image Access Mgmt</span></div>
+          <div class="node-desc">Registry policy controls</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="detail-panel" id="detail" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MARKET = {
+  isv: {
+    note: "Top container-native ISV categories by Docker Hub pull volume and developer tool survey data (2024).",
+    color: "#5238b8",
+    players: [
+      { name: "HashiCorp", pct: 22 },
+      { name: "Elastic", pct: 18 },
+      { name: "MongoDB", pct: 15 },
+      { name: "Grafana Labs", pct: 12 },
+      { name: "Confluent", pct: 9 }
+    ]
+  },
+  idp: {
+    note: "Enterprise identity provider market share among Fortune 2000 companies (Gartner, 2024).",
+    color: "#5238b8",
+    players: [
+      { name: "Microsoft (Azure AD)", pct: 42 },
+      { name: "Okta", pct: 26 },
+      { name: "Google Workspace", pct: 14 },
+      { name: "Ping Identity", pct: 8 },
+      { name: "OneLogin", pct: 5 }
+    ]
+  },
+  ci: {
+    note: "CI/CD platform adoption among developers using containers (Stack Overflow Survey + JetBrains DevEco 2024).",
+    color: "#0d7a5c",
+    players: [
+      { name: "GitHub Actions", pct: 45 },
+      { name: "GitLab CI", pct: 22 },
+      { name: "Jenkins", pct: 14 },
+      { name: "CircleCI", pct: 8 },
+      { name: "Buildkite", pct: 5 }
+    ]
+  },
+  obs: {
+    note: "Observability platform market share by enterprise ARR (Forrester Wave, 2024).",
+    color: "#1a5fad",
+    players: [
+      { name: "Datadog", pct: 32 },
+      { name: "Grafana (OSS+Cloud)", pct: 24 },
+      { name: "New Relic", pct: 16 },
+      { name: "Dynatrace", pct: 14 },
+      { name: "Elastic", pct: 8 }
+    ]
+  },
+  hosting: {
+    note: "Cloud infrastructure market share by revenue (Synergy Research Q1 2025).",
+    color: "#b83818",
+    players: [
+      { name: "AWS", pct: 31 },
+      { name: "Microsoft Azure", pct: 25 },
+      { name: "Google Cloud", pct: 12 },
+      { name: "Alibaba Cloud", pct: 4 },
+      { name: "Oracle Cloud", pct: 3 }
+    ]
+  },
+  iac: {
+    note: "IaC tool adoption among DevOps practitioners (HashiCorp State of Cloud 2024).",
+    color: "#92600a",
+    players: [
+      { name: "Terraform", pct: 51 },
+      { name: "Ansible", pct: 22 },
+      { name: "Pulumi", pct: 10 },
+      { name: "AWS CDK", pct: 9 },
+      { name: "Chef / Puppet", pct: 4 }
+    ]
+  },
+  security: {
+    note: "Container security tool market share by enterprise deployments (IDC Container Security Survey 2024).",
+    color: "#993356",
+    players: [
+      { name: "Snyk", pct: 28 },
+      { name: "Aqua Security", pct: 20 },
+      { name: "Prisma Cloud", pct: 18 },
+      { name: "Wiz", pct: 16 },
+      { name: "Trivy (OSS)", pct: 12 }
+    ]
+  },
+  ml: {
+    note: "ML platform market share by enterprise workloads and managed service revenue (IDC AI Infrastructure 2024).",
+    color: "#0d7a5c",
+    players: [
+      { name: "AWS SageMaker", pct: 33 },
+      { name: "Google Vertex AI", pct: 24 },
+      { name: "Azure ML", pct: 20 },
+      { name: "Databricks", pct: 12 },
+      { name: "Hugging Face", pct: 7 }
+    ]
+  },
+  ai: {
+    note: "AI agent framework adoption by GitHub stars, PyPI downloads, and enterprise integration surveys (2024-2025).",
+    color: "#5238b8",
+    players: [
+      { name: "LangChain", pct: 38 },
+      { name: "AutoGen (Microsoft)", pct: 22 },
+      { name: "CrewAI", pct: 16 },
+      { name: "LlamaIndex", pct: 14 },
+      { name: "Haystack", pct: 6 }
+    ]
+  },
+  ide: {
+    note: "IDE and code editor market share by active monthly users (JetBrains Developer Ecosystem Survey 2024 + Stack Overflow Survey 2024).",
+    color: "#0d7a5c",
+    players: [
+      { name: "VS Code", pct: 74 },
+      { name: "JetBrains (all)", pct: 26 },
+      { name: "Cursor", pct: 11 },
+      { name: "Neovim", pct: 9 },
+      { name: "Sublime Text", pct: 6 }
+    ]
+  }
+};
+
+const PARTNERS = {
+  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop"],                        color: "#5238b8" },
+  idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy"],             color: "#5238b8" },
+  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub"],                    color: "#0d7a5c" },
+  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop"],        color: "#1a5fad" },
+  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs"],           color: "#b83818" },
+  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli"],                color: "#92600a" },
+  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions"], color: "#993356" },
+  ml:       { name: "ML platforms",             highlights: ["engine","containerd","buildkit","hub","devenvs","compose"],   color: "#0d7a5c" },
+  ai:       { name: "AI agents",                highlights: ["engine","compose","hub","extensions","cli","devenvs"],        color: "#5238b8" },
+  ide:      { name: "IDE / code editors",       highlights: ["devenvs","extensions","desktop","cli","compose","engine"],   color: "#0d7a5c" }
+};
+
+const NODE_DATA = {
+  extensions: {
+    icon: "🔌", name: "Docker Extensions",
+    tagline: "Embed your product inside Docker Desktop for millions of developers",
+    values: [
+      "Reach 20M+ Docker Desktop users through the Extensions Marketplace without separate distribution",
+      "Extensions run as a web app inside Docker Desktop with full access to the Docker Engine API",
+      "Extension SDK provides standardized UI patterns that match Docker Desktop native look and feel",
+      "Users install your extension once and it is available in every Docker Desktop session",
+      "Telemetry and usage data from the Extensions SDK helps you understand how developers use your product"
+    ],
+    opps: {
+      isv:      { type: "Product integration",    desc: "Publish an extension that embeds your tool workflow into Docker Desktop. Direct access to 20M developers at the moment of use.", tags: ["Extension SDK","Hub Marketplace","Extensions API"] },
+      obs:      { type: "Observability partner",  desc: "Surface your metrics and log dashboards inside Docker Desktop, giving developers visibility before code leaves the laptop.", tags: ["Metrics API","Log streaming","Extension SDK"] },
+      security: { type: "Security integration",   desc: "A scanning extension that runs on docker build shows CVE results and remediation advice directly in the developer workflow.", tags: ["Docker Engine API","Scout API","Extension SDK"] },
+      ai:       { type: "AI agent tooling",       desc: "Publish an extension that lets developers launch, monitor, and interact with containerized AI agents directly from Docker Desktop.", tags: ["Extension SDK","Docker Engine API","Agent UI"] },
+      ide:      { type: "IDE companion extension", desc: "IDEs can publish a Docker Desktop extension that mirrors their container management UI — giving developers a consistent experience whether they are in the editor or in Docker Desktop.", tags: ["Extension SDK","Extensions API","IDE bridge"] }
+    }
+  },
+  hub: {
+    icon: "🌐", name: "Docker Hub",
+    tagline: "Distribute your software to 14M+ images consumed by millions of developers",
+    values: [
+      "Publisher program lets ISVs list verified images in Docker Hub Verified Publisher catalog",
+      "Pull analytics give publishers visibility into how many users consume their images",
+      "14M+ images makes Hub the default discovery surface for container-native software",
+      "Hub webhooks enable pub/sub distribution: new image tag triggers any downstream system",
+      "Docker Content Trust lets publishers sign images and communicate provenance to consumers"
+    ],
+    opps: {
+      isv:     { type: "Distribution channel",        desc: "Become a Verified Publisher. Your containerized product appears in Hub search for millions of developers evaluating solutions.", tags: ["Verified Publisher","Hub Marketplace","DCT"] },
+      hosting: { type: "Registry mirror",             desc: "Mirror Hub content in your cloud region to reduce pull latency and egress costs for mutual customers.", tags: ["Registry mirror","Pull-through cache","OCI spec"] },
+      ci:      { type: "CI pipeline integration",     desc: "CI platforms that authenticate Hub pulls natively get rate-limit bypass and can surface image metadata in pipeline UI.", tags: ["Hub API","Authenticated pulls","Webhook"] },
+      ml:      { type: "Model image distribution",    desc: "ML platforms can publish pre-built model serving images (TorchServe, TF Serving, vLLM) on Hub for one-pull deployment.", tags: ["Verified Publisher","Model images","Hub API"] },
+      ai:      { type: "Agent image registry",        desc: "AI agent frameworks can ship official runtime images on Hub, making container-native agent deployment the default path.", tags: ["Verified Publisher","Agent images","Hub webhooks"] }
+    }
+  },
+  compose: {
+    icon: "🗂", name: "Docker Compose",
+    tagline: "The application deployment spec that links dev, CI, and cloud",
+    values: [
+      "Compose file is the universal multi-container app spec — supported natively by ECS, Fly.io, Render, and more",
+      "Open specification (Compose Spec) means any platform can extend it without forking",
+      "Used by millions of developers as both local dev tooling and production deployment manifest",
+      "Service dependency ordering (depends_on + healthcheck) is a proven multi-cloud deployment primitive",
+      "compose.yaml version-controlled alongside app code makes infrastructure changes reviewable"
+    ],
+    opps: {
+      hosting: { type: "Deployment target",       desc: "Implement Compose Spec support so customers can docker compose deploy directly to your cloud. Lower friction than proprietary YAML.", tags: ["Compose Spec","docker compose deploy","compose-ecs"] },
+      ci:      { type: "Test environment",         desc: "CI platforms that spin up Compose stacks natively can offer one-command integration test environments without configuration.", tags: ["Compose Spec","Healthcheck","Environment isolation"] },
+      iac:     { type: "App-layer IaC complement", desc: "Terraform manages infra, Compose manages containers. Co-sell reference architectures covering the full deployment stack.", tags: ["Compose Spec","Terraform provider","Reference arch"] },
+      ml:      { type: "ML stack definition",      desc: "Define multi-service ML stacks (model server + preprocessing + cache) as a Compose file — reproducible from laptop to cloud.", tags: ["Compose Spec","GPU passthrough","ML service mesh"] },
+      ai:      { type: "Agent orchestration",      desc: "Multi-agent systems (orchestrator + tool servers + memory + LLM proxy) map naturally to Compose services with network isolation.", tags: ["Compose networking","Service deps","Agent topology"] },
+      ide:     { type: "Compose file authoring",   desc: "IDEs with Compose schema validation, autocomplete, and one-click service launch turn the compose.yaml into a visual project configuration — lowering the barrier to multi-container development.", tags: ["Compose Spec","YAML schema","Language server","docker compose up"] }
+    }
+  },
+  desktop: {
+    icon: "🖥", name: "Docker Desktop",
+    tagline: "The primary touchpoint for 20M+ developers on Mac, Windows, and Linux",
+    values: [
+      "20M+ active installs — the largest desktop developer tool install base across all platforms",
+      "Organization licensing and management enable scalable enterprise deployment",
+      "SSO enforcement and SCIM support make it enterprise IT-manageable at scale",
+      "Docker Desktop is where developers first encounter container tooling — high-awareness partner surface",
+      "Extensions marketplace creates an in-product distribution channel for partner solutions"
+    ],
+    opps: {
+      idp: { type: "SSO enforcement partner", desc: "Docker Business enforces SSO for all Desktop logins. Co-sell to enterprise accounts where you already have an identity footprint.", tags: ["SAML 2.0","OIDC","Docker Business"] },
+      obs: { type: "Developer observability",  desc: "An observability extension gives developers local container visibility before shipping — a top-of-funnel touchpoint for your platform.", tags: ["Extension SDK","Metrics API","Log streaming"] },
+      isv: { type: "Developer reach",          desc: "Publishing an extension reaches every Docker Desktop user at the moment they work with containers — the highest-intent moment for developer tools.", tags: ["Extensions Marketplace","Extension SDK"] },
+      ide: { type: "Deep Desktop integration",  desc: "IDEs can integrate Docker Desktop as a first-class backend — launching, stopping, and inspecting containers from within the editor using the Docker Desktop API and Extension SDK.", tags: ["Docker Desktop API","Extension SDK","Remote container","Dev Environments"] }
+    }
+  },
+  buildkit: {
+    icon: "🏗", name: "BuildKit",
+    tagline: "The build engine where security attestations and cache integrations live",
+    values: [
+      "Remote cache backends (S3, GCS, registry) are a direct integration point for cloud storage partners",
+      "SBOM and provenance attestations at build time create a standardized feed for security tooling partners",
+      "Exporters support OCI, Docker, and custom formats — integrators can add new export targets via plugin",
+      "Multi-platform builds (buildx) produce cross-arch images from a single pipeline step",
+      "Open-source (Moby project) — partners can contribute features and maintain deep integrations"
+    ],
+    opps: {
+      ci:       { type: "Build acceleration",      desc: "CI platforms that configure BuildKit remote cache backends cut customer build times by 60-80%. A measurable, sellable performance benefit.", tags: ["BuildKit cache","buildx","Cache backend API"] },
+      security: { type: "SBOM consumer",           desc: "BuildKit generates SBOM and provenance attestations at build time. Security platforms consuming these get ground-truth supply chain data.", tags: ["SBOM","Cosign","OCI referrers","in-toto"] },
+      hosting:  { type: "Remote builder",          desc: "Host a remote BuildKit builder so customers run docker buildx build --builder my-cloud and images build close to their registry.", tags: ["buildx","Remote builder","BuildKit daemon"] },
+      ml:       { type: "GPU-aware image builds",  desc: "ML platforms can offer BuildKit-based builders pre-configured with CUDA drivers and ML framework layers cached, cutting model image build times dramatically.", tags: ["buildx","CUDA layers","Remote cache","Multi-platform"] }
+    }
+  },
+  engine: {
+    icon: "⚡", name: "Docker Engine",
+    tagline: "The open-source runtime and REST API that all tooling integrates with",
+    values: [
+      "Docker Engine REST API is the primary integration surface for all automation and tooling partners",
+      "Open-source under Apache 2.0 — partners can contribute, fork, or embed without licensing concerns",
+      "Plugin system supports storage, network, and authorization plugins from third-party vendors",
+      "Engine events stream enables real-time integration with monitoring, SIEM, and automation tools",
+      "Swarm mode provides basic multi-node orchestration without adding Kubernetes complexity"
+    ],
+    opps: {
+      obs:      { type: "Metrics integration",      desc: "Engine /metrics Prometheus endpoint and events API are the direct integration points for runtime observability.", tags: ["Prometheus endpoint","Events API","Docker stats"] },
+      iac:      { type: "Terraform provider",        desc: "Maintain a Terraform/Pulumi provider that manages Engine resources as declarative infrastructure. Co-market to joint enterprise customers.", tags: ["Docker Provider","Terraform","Pulumi","REST API"] },
+      security: { type: "AuthZ plugin",             desc: "Engine AuthZ plugin interface lets security partners intercept and authorize every Docker API call based on policy.", tags: ["AuthZ plugin","Docker Engine API","OPA"] },
+      ml:       { type: "GPU runtime integration",  desc: "ML platforms integrate via the Engine API to schedule GPU-backed containers with device passthrough and resource limits for training and inference workloads.", tags: ["Engine API","GPU passthrough","nvidia-container-toolkit","cgroups"] },
+      ai:       { type: "Agent execution layer",    desc: "AI agent frameworks that run tools and sandboxed code in containers call the Engine API to spin up ephemeral execution environments per agent action.", tags: ["Engine API","Container sandbox","Ephemeral execution","gVisor"] },
+      ide:      { type: "Container-aware debugging", desc: "IDEs that connect directly to the Docker Engine API can attach debuggers to running containers, stream logs into the editor panel, and hot-reload code without a rebuild cycle.", tags: ["Engine API","Remote attach","Debug adapter","docker exec"] }
+    }
+  },
+  containerd: {
+    icon: "📦", name: "containerd",
+    tagline: "The CNCF runtime that bridges Docker and Kubernetes deployments",
+    values: [
+      "Used by Docker Engine, EKS, GKE, and AKS — the single runtime spanning local and cloud",
+      "containerd snapshotter API is an integration point for storage vendors",
+      "Runtime security hooks (NRI plugins) enable security vendors to observe and enforce at runtime",
+      "containerd gRPC API is machine-friendly for platform and orchestration tooling",
+      "CNCF graduation means long-term support and stability for deep integrations"
+    ],
+    opps: {
+      hosting:  { type: "Kubernetes runtime",       desc: "containerd is the runtime on EKS, GKE, AKS, and every major Kubernetes distro. Partners that optimize containerd deliver measurable cold-start improvements.", tags: ["CRI","Snapshotter API","EKS","GKE","AKS"] },
+      security: { type: "Runtime security hooks",   desc: "containerd NRI allows security tools to intercept container lifecycle events for behavioral threat detection without modifying the runtime.", tags: ["NRI plugin","Falco","Tracee","eBPF"] },
+      obs:      { type: "Runtime telemetry",        desc: "containerd exposes runtime metrics (pull latency, container start time, cache hits) that complement application-layer observability.", tags: ["containerd metrics","Prometheus","OpenTelemetry"] },
+      ml:       { type: "Optimized ML runtime",     desc: "ML platforms can customize the containerd snapshotter to pre-warm large model layers (10-100GB) and avoid re-downloading weights on every container start.", tags: ["Snapshotter API","Layer caching","Model weights","Lazy-pull"] }
+    }
+  },
+  devenvs: {
+    icon: "⚙️", name: "Dev Environments",
+    tagline: "The workspace definition standard that connects dev to cloud",
+    values: [
+      "Dev Environments use the devcontainer spec — supported by VS Code, GitHub Codespaces, and JetBrains",
+      "The compose.yaml backing a Dev Environment is the same file used for CI and staging",
+      "Cloud development platform partners can offer Docker Dev Environments as a hosted service",
+      "Enables environment-as-code — a compelling demo for platform engineering and DevEx teams",
+      "Integration point for IDE vendors, cloud IDEs, and development productivity platforms"
+    ],
+    opps: {
+      hosting: { type: "Hosted dev environments", desc: "Host Docker Dev Environments in your cloud so customers get a full pre-configured workspace in seconds. Compete with Codespaces and Gitpod.", tags: ["devcontainer spec","Compose Spec","Remote container"] },
+      iac:     { type: "Environment-as-code",      desc: "IaC tools that manage devcontainer.json and compose.yaml alongside infrastructure definition close the loop between prod infra and dev environment parity.", tags: ["devcontainer.json","Terraform","Pulumi"] },
+      ci:      { type: "Dev-CI parity",            desc: "CI platforms using the same compose.yaml as Dev Environments guarantee dev-CI parity — a strong joint value proposition for DevEx teams.", tags: ["Compose Spec","devcontainer","GitHub Actions"] },
+      ml:      { type: "ML dev environment",       desc: "ML platforms can ship devcontainer configs pre-loaded with GPU drivers, CUDA, Jupyter, and common ML libraries so data scientists get a working environment from a single URL.", tags: ["devcontainer spec","CUDA","Jupyter","ML toolchain"] },
+      ai:      { type: "Agent dev workspace",      desc: "AI agent framework providers can ship devcontainer configs that include all agent dependencies, tool servers, and model endpoints so developers build agents without setup friction.", tags: ["devcontainer spec","Agent toolchain","LLM proxy","MCP servers"] },
+      ide:     { type: "Devcontainer authoring",   desc: "IDEs that generate and validate devcontainer.json and compose.yaml from a GUI give developers a no-YAML path to reproducible Docker environments. VS Code Remote Containers is the reference integration.", tags: ["devcontainer spec","Remote - Containers","Compose Spec","Dev Environments API"] }
+    }
+  },
+  cli: {
+    icon: ">_", name: "Docker CLI",
+    tagline: "The scriptable interface that CI and IaC tools call into",
+    values: [
+      "CLI plugin system lets partners add subcommands that integrate natively into developer workflows",
+      "Context switching allows one CLI to manage multiple environments — a direct cloud provider integration point",
+      "Machine-readable JSON output is designed for consumption by automation scripts and platforms",
+      "CLI is open-source and extensible — partners can maintain plugins without Docker involvement",
+      "100M+ Docker CLI installs makes it a universal automation primitive across dev, CI, and ops"
+    ],
+    opps: {
+      ci:      { type: "Native pipeline step",   desc: "CI platforms that pre-install Docker CLI and provide native build/push/scout pipeline steps reduce customer configuration friction.", tags: ["docker build","docker push","docker scout","Pipeline integration"] },
+      iac:     { type: "CLI plugin",             desc: "Build a Docker CLI plugin or wrapper that calls Docker CLI commands as part of infra provisioning workflows.", tags: ["CLI plugin API","Docker context","docker compose"] },
+      hosting: { type: "docker context",         desc: "Cloud providers implementing docker context create mycloud let customers manage cloud containers via local CLI — zero new tooling required.", tags: ["docker context","Docker Engine API","Remote daemon"] },
+      ai:      { type: "Agent CLI tooling",      desc: "AI agent frameworks can ship a docker agent CLI plugin that lets developers scaffold, run, and inspect containerized agents using familiar Docker commands.", tags: ["CLI plugin API","docker context","Agent scaffold"] },
+      ide:     { type: "Integrated terminal",    desc: "IDEs with integrated terminals can detect Docker CLI and surface contextual command suggestions (docker compose up, docker logs, docker exec) inline alongside code, reducing friction for developers new to containers.", tags: ["Docker CLI","Terminal integration","CLI context","docker compose"] }
+    }
+  },
+  scout: {
+    icon: "🔍", name: "Docker Scout",
+    tagline: "The supply chain security platform with open integration APIs",
+    values: [
+      "Scout API allows partners to ingest SBOM and CVE data into their own security platforms",
+      "Policy framework is extensible — partners can contribute policy definitions for their security standards",
+      "Scout CLI plugin enables integration into any CI pipeline regardless of Docker Hub usage",
+      "Attestation consumption APIs let security platforms verify Scout-generated provenance signatures",
+      "Scout integrates as a data source into vulnerability management and CSPM platforms via API"
+    ],
+    opps: {
+      security: { type: "SBOM consumer",       desc: "Platforms consuming Scout SBOM and CVE data via API can correlate Docker-layer vulnerabilities with runtime workload context and application risk scoring.", tags: ["Scout API","SBOM","CVE data","Webhook"] },
+      ci:       { type: "Policy gate",          desc: "CI platforms surfacing docker scout policy results give customers pass/fail security gates without leaving the CI workflow.", tags: ["docker scout cves","Scout API","Pipeline gate"] },
+      isv:      { type: "Co-sell security",     desc: "ISVs shipping on Docker can certify images via Scout (zero critical CVEs, signed, SBOM attached) as a trust signal to enterprise buyers.", tags: ["Verified Publisher","Scout certification","SBOM attestation"] }
+    }
+  },
+  officialimages: {
+    icon: "✅", name: "Official Images",
+    tagline: "The base image program for established software vendors",
+    values: [
+      "Official Image status signals community trust and Docker endorsement to millions of developers",
+      "Official Images are maintained by the software community under Docker stewardship — a partnership model",
+      "Continuously rebuilt when upstream CVEs are patched — Docker manages the operational burden",
+      "Among the most-pulled images on Docker Hub — directly benefits the upstream project adoption",
+      "Official Image Dockerfiles are the reference that developers learn from"
+    ],
+    opps: {
+      isv:      { type: "Official Image partnership", desc: "Apply to become a Docker Official Image. Your software becomes the default containerized version, pre-trusted by millions of developers and auto-patched on CVEs.", tags: ["Official Image program","Docker Hub","Community trust"] },
+      security: { type: "Base image CVE tracking",   desc: "Security platforms integrating with Docker Official Image rebuild pipeline can automatically notify downstream users when a base image they depend on is patched.", tags: ["Scout","CVE tracking","Webhook","Dependabot"] },
+      hosting:  { type: "Pre-trusted catalog",        desc: "Cloud platforms that pre-approve Official Images in admission controllers reduce friction when deploying standard runtime stacks (nginx, postgres, redis).", tags: ["Verified Publisher","Admission webhook","Image policy"] }
+    }
+  },
+  dhi: {
+    icon: "🏢", name: "Docker Hardened Images",
+    tagline: "The enterprise security image program built for compliance-driven buyers",
+    values: [
+      "DHI program creates an enterprise-tier distribution channel for hardened, compliant software images",
+      "ISVs can co-publish DHI-compatible versions of their software for security-conscious enterprise buyers",
+      "DHI images come with cryptographic provenance — a trust signal recognized by compliance frameworks",
+      "The CVE-near-zero SLA is a co-marketing hook for enterprise security sales motions",
+      "Compliance certifications (SOC 2, NIST 800-190) are easier to achieve with DHI as the base layer"
+    ],
+    opps: {
+      security: { type: "Compliance co-sell",    desc: "Position DHI as the foundation for your compliance scanning product — start from a near-zero CVE base, then validate. Joint reference architecture for PCI-DSS and SOC 2 workloads.", tags: ["DHI","Cosign","SBOM attestation","Compliance"] },
+      hosting:  { type: "Enterprise workload",   desc: "Cloud providers certifying workloads built on DHI as security-baseline compliant create a differentiated enterprise offering and reduce shared-responsibility surface area.", tags: ["DHI","OPA Gatekeeper","Admission policy"] },
+      isv:      { type: "Enterprise distribution", desc: "Publish a DHI-compatible version of your software. Enterprise buyers with strict image policies can use your product without security exceptions.", tags: ["DHI program","Cosign","Verified Publisher"] }
+    }
+  },
+  accesstokens: {
+    icon: "🔑", name: "Access Tokens & SSO",
+    tagline: "The identity integration surface for Docker Business customers",
+    values: [
+      "SAML/OIDC SSO is the primary integration point for identity provider partners",
+      "SCIM provisioning API enables automated lifecycle management from any IdP",
+      "Docker Business enforces org-wide SSO — a compliance requirement for enterprise accounts",
+      "PAT management API allows automation platforms to programmatically rotate credentials",
+      "SSO enforcement is a top enterprise buyer requirement — a key differentiator for Docker Business"
+    ],
+    opps: {
+      idp:      { type: "Primary SSO partner",   desc: "Docker Business natively supports SAML 2.0 and OIDC. Certified integration ensures Docker appears in your application catalog for mutual enterprise customers.", tags: ["SAML 2.0","OIDC","SCIM","App catalog"] },
+      security: { type: "Credential security",   desc: "PAM and secrets management platforms can integrate with Docker PAT API to rotate tokens on schedule, eliminating long-lived credentials in CI pipelines.", tags: ["PAT API","HashiCorp Vault","AWS Secrets Manager","CyberArk"] },
+      ci:       { type: "Authenticated pulls",   desc: "CI platforms managing Docker PATs as first-class pipeline secrets and auto-rotating them remove a common cause of CI failures for mutual customers.", tags: ["PAT API","GitHub Secrets","GitLab CI Variables","Vault"] }
+    }
+  },
+  orgmgmt: {
+    icon: "🏛", name: "Org & Team Management",
+    tagline: "The RBAC and licensing layer for enterprise Docker deployments",
+    values: [
+      "Management API enables IaC tools and IT platforms to manage Docker orgs programmatically",
+      "SCIM group sync ties Docker teams to IdP groups — a required enterprise feature",
+      "Seat usage API allows MSPs and resellers to track license consumption for billing and reporting",
+      "Org settings can be configured via API for automated onboarding",
+      "Partner resellers can use the Management API to provision and manage customer orgs at scale"
+    ],
+    opps: {
+      idp:     { type: "Group-to-team sync", desc: "SCIM integration maps your IdP groups directly to Docker teams. Employee role changes in your IdP update Docker access automatically.", tags: ["SCIM","Group sync","RBAC","Azure AD","Okta"] },
+      iac:     { type: "Org-as-code",         desc: "IaC providers exposing Docker Org resources allow enterprises to version-control their Docker governance model alongside application infrastructure.", tags: ["Terraform provider","Management API","RBAC"] },
+      hosting: { type: "MSP automation",      desc: "Managed service providers can automate customer org provisioning, seat management, and reporting via the Management API.", tags: ["Management API","Seat reporting","Org provisioning"] }
+    }
+  },
+  audit: {
+    icon: "📋", name: "Audit Logs",
+    tagline: "The compliance event stream for security and governance partners",
+    values: [
+      "Audit log API enables security platforms to pull Docker activity events for SIEM correlation",
+      "Exportable JSON format is compatible with every major log management platform",
+      "Event types cover the full security surface: logins, image pushes, permission changes, policy violations",
+      "Retention and export can be automated via API for compliance reporting pipelines",
+      "Audit log data complements runtime security telemetry — who changed what in Docker, when"
+    ],
+    opps: {
+      obs:      { type: "SIEM integration",       desc: "Security platforms pulling Docker audit logs can correlate Docker activity with runtime events to detect insider threats and misuse.", tags: ["Audit Log API","Webhook","SIEM","Log forwarding"] },
+      security: { type: "Compliance evidence",    desc: "GRC platforms automating Docker audit log collection can generate SOC 2 and ISO 27001 evidence without manual data collection.", tags: ["Audit Log API","Vanta","Drata","Secureframe"] },
+      idp:      { type: "Identity correlation",   desc: "Correlating Docker audit events with IdP authentication logs reveals access patterns and anomalies that neither system surfaces alone.", tags: ["Audit Log API","Okta Workflows","SIEM","UEBA"] }
+    }
+  },
+  imagepolicy: {
+    icon: "🛡", name: "Image Access Management",
+    tagline: "The policy enforcement layer connecting Docker to enterprise security stacks",
+    values: [
+      "Registry allowlist enforcement creates demand for partner-hosted enterprise registries",
+      "Policy is configurable via Management API — automated onboarding for security platforms",
+      "IAM complements Kubernetes admission controllers — same policy intent, two enforcement points",
+      "Blocks unofficial image use — a direct driver for Verified Publisher adoption",
+      "Audit events record every policy violation — data for security analytics platforms"
+    ],
+    opps: {
+      security: { type: "Policy complement",      desc: "Docker IAM enforces approved registries at the Desktop level; pair with Kyverno or OPA for the same policy at Kubernetes admission time.", tags: ["IAM API","OPA","Kyverno","Admission webhook"] },
+      hosting:  { type: "Approved registry",      desc: "Cloud providers whose registry is added to Docker IAM allowlists become the default trusted image source for enterprise Docker customers.", tags: ["ECR","GCR","Artifactory","Harbor"] },
+      idp:      { type: "Policy-as-identity",     desc: "Tie Docker IAM registry policies to IdP groups — access changes in one place, enforced everywhere.", tags: ["SCIM groups","IAM API","SAML attributes"] }
+    }
+  }
+};
+
+let activePartner = "isv";
+let activeNode = null;
+
+function buildMiniMarket(partnerKey) {
+  const m = MARKET[partnerKey];
+  if (!m) return "";
+  const maxPct = m.players[0].pct;
+  return `
+    <div class="p-market-label">top 5 by market share</div>
+    <div class="p-players">
+      ${m.players.map(p => `
+        <div class="p-player">
+          <span class="p-player-name">${p.name}</span>
+          <div class="p-bar-wrap"><div class="p-bar" style="width:${Math.round(p.pct/maxPct*100)}%;background:${m.color}88"></div></div>
+          <span class="p-pct">${p.pct}%</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function initMarketBars() {
+  document.querySelectorAll(".p-market[data-partner]").forEach(el => {
+    el.innerHTML = buildMiniMarket(el.dataset.partner);
+  });
+}
+
+function selectPartner(el) {
+  document.querySelectorAll(".partner-btn").forEach(b => b.classList.remove("active"));
+  el.classList.add("active");
+  activePartner = el.dataset.partner;
+  activeNode = null;
+  document.getElementById("detail").style.display = "none";
+  applyHighlights();
+}
+
+function applyHighlights() {
+  const partner = PARTNERS[activePartner];
+  document.querySelectorAll(".node").forEach(n => {
+    n.classList.toggle("highlighted", partner.highlights.includes(n.dataset.id));
+  });
+}
+
+function selectNode(el) {
+  const id = el.dataset.id;
+  if (!PARTNERS[activePartner].highlights.includes(id)) {
+    document.getElementById("detail").style.display = "none";
+    activeNode = null;
+    return;
+  }
+  if (activeNode === id) {
+    document.getElementById("detail").style.display = "none";
+    activeNode = null;
+    document.querySelectorAll(".node").forEach(n => n.classList.remove("active"));
+    return;
+  }
+  document.querySelectorAll(".node").forEach(n => n.classList.remove("active"));
+  el.classList.add("active");
+  activeNode = id;
+  renderPanel(NODE_DATA[id]);
+}
+
+function renderPanel(d) {
+  const opp = d.opps[activePartner] || Object.values(d.opps)[0];
+  const m = MARKET[activePartner];
+  const partner = PARTNERS[activePartner];
+  const maxPct = m.players[0].pct;
+
+  const panel = document.getElementById("detail");
+  panel.style.display = "block";
+  panel.innerHTML = `
+    <div class="dp-header">
+      <span class="dp-icon">${d.icon}</span>
+      <div>
+        <div class="dp-title">${d.name}</div>
+        <div class="dp-sub">${d.tagline}</div>
+      </div>
+      <button class="close-btn" onclick="closePanel()">close</button>
+    </div>
+    <div class="dp-body">
+      <div class="dp-col">
+        <div class="col-label">// ecosystem value — 5 key points</div>
+        <ul class="value-list">
+          ${d.values.map(v => `<li>${v}</li>`).join("")}
+        </ul>
+      </div>
+      <div class="dp-col">
+        <div class="col-label">// partner opportunity — ${partner.name}</div>
+        <div class="opp-item" style="border-left-color:${partner.color}">
+          <div class="opp-type">${opp.type}</div>
+          <div class="opp-desc">${opp.desc}</div>
+          <div class="opp-tags">${opp.tags.map(t => `<span class="opp-tag">${t}</span>`).join("")}</div>
+        </div>
+      </div>
+    </div>
+    <div class="market-panel">
+      <div class="market-title">// ${partner.name} — top 5 players by market share</div>
+      <div class="market-rows">
+        ${m.players.map((p, i) => `
+          <div class="market-row">
+            <span class="market-rank">${i+1}</span>
+            <span class="market-name">${p.name}</span>
+            <div class="market-bar-wrap"><div class="market-bar" style="width:${Math.round(p.pct/maxPct*100)}%;background:${partner.color}"></div></div>
+            <span class="market-pct">${p.pct}%</span>
+          </div>
+        `).join("")}
+      </div>
+      <div class="market-note">${m.note}</div>
+    </div>
+  `;
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function closePanel() {
+  document.getElementById("detail").style.display = "none";
+  document.querySelectorAll(".node").forEach(n => n.classList.remove("active"));
+  activeNode = null;
+}
+
+initMarketBars();
+applyHighlights();
+</script>
+</body>
+</html>
