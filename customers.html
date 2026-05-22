@@ -197,21 +197,21 @@ h1 span { color: var(--blue-bright); }
   <div class="eco-map">
     <div class="map-label">// ecosystem layers — click any component to explore</div>
 
-    <!-- Tier 1: Developer experience -->
+    <!-- Dev experience tier -->
     <div class="tier">
-      <div class="tier-label">Dev experience</div>
+      <div class="tier-label">Dev exp</div>
       <div class="node blue" data-id="desktop" onclick="select(this)">
         <span class="node-icon">🖥</span>
         <div class="node-name">Docker Desktop</div>
         <div class="node-desc">Local dev environment</div>
       </div>
-      <div class="node blue" data-id="devenvs" onclick="select(this)">
+      <div class="node blue" data-id="devenvs" onclick="select(this)" style="opacity:0.55;border-style:dashed">
         <span class="node-icon">⚙️</span>
-        <div class="node-name">Dev Environments</div>
-        <div class="node-desc">Reproducible workspaces</div>
+        <div class="node-name" style="text-decoration:line-through;text-decoration-color:#424960">Dev Environments</div>
+        <div class="node-desc" style="font-style:italic">Deprecated — see SBX</div>
       </div>
       <div class="node blue" data-id="cli" onclick="select(this)">
-        <span class="node-icon">></span>
+        <span class="node-icon">>_</span>
         <div class="node-name">Docker CLI</div>
         <div class="node-desc">Command-line control</div>
       </div>
@@ -219,6 +219,21 @@ h1 span { color: var(--blue-bright); }
         <span class="node-icon">🔌</span>
         <div class="node-name">Docker Extensions</div>
         <div class="node-desc">Marketplace plugins</div>
+      </div>
+    </div>
+
+    <!-- Testing tier -->
+    <div class="tier">
+      <div class="tier-label">Testing</div>
+      <div class="node teal" data-id="testcontainers" onclick="select(this)">
+        <span class="node-icon">🧪</span>
+        <div class="node-name">Testcontainers</div>
+        <div class="node-desc">Real deps in test code</div>
+      </div>
+      <div class="node teal" data-id="offload" onclick="select(this)">
+        <span class="node-icon">☁️</span>
+        <div class="node-name">Docker Offload</div>
+        <div class="node-desc">Cloud-accelerated builds & runs</div>
       </div>
     </div>
 
@@ -355,19 +370,50 @@ const DATA = {
     ]
   },
   devenvs: {
-    icon: '⚙️', name: 'Dev Environments', color: '#63b3ff',
-    tagline: 'Reproducible, shareable development workspaces from a single URL',
+    icon: '⚙️', name: 'Dev Environments (Deprecated)', color: '#63b3ff',
+    tagline: '⚠️ Deprecated — Docker Sandboxes (SBX) and the devcontainer spec are the recommended replacements',
     values: [
-      'Codify the full development environment (runtime, dependencies, config) in a compose.yaml or devcontainer spec',
-      'Share a workspace via Git URL — teammates clone once and get an identical environment in minutes',
-      'Isolates project dependencies so switching between Node 16 and Node 20 projects doesn\'t break anything',
-      'Works with VS Code and JetBrains IDEs via remote container support',
-      'Eliminates "works on my machine" bugs by making the dev environment as reproducible as the production image'
+      'DEPRECATED: Docker is winding down active development of this feature; existing setups continue to work but no new capabilities are planned',
+      'The devcontainer spec (VS Code Remote Containers, GitHub Codespaces, JetBrains Gateway) is the recommended migration path for workspace definitions',
+      'Docker Sandboxes (SBX) supersedes Dev Environments for AI coding agent workflows with stronger isolation and built-in governance',
+      'compose.yaml-based local development remains fully supported — only the Docker Desktop Dev Environments UI wrapper is being deprecated',
+      'Teams using devcontainer.json directly without the Docker Desktop Dev Environments GUI are unaffected and should continue as-is'
     ],
     integrations: [
-      { cat: 'CI / CD', desc: 'The same compose.yaml used locally can drive CI pipelines, ensuring dev and CI environments are identical', examples: ['GitHub Actions', 'GitLab CI', 'CircleCI'] },
-      { cat: 'IaC', desc: 'Devcontainer configs can be version-controlled alongside Terraform/Pulumi infra definitions for full env-as-code', examples: ['Terraform', 'Pulumi', 'Ansible'] },
-      { cat: 'Hosting', desc: 'Dev environments that mirror production containers reduce drift between local and cloud-deployed services', examples: ['AWS ECS', 'GCP Cloud Run', 'Azure Container Apps'] }
+      { cat: 'Migration path', desc: 'Move workspace definitions to pure devcontainer.json + compose.yaml — these work natively in VS Code, GitHub Codespaces, and JetBrains without the Docker Dev Environments wrapper', examples: ['devcontainer spec', 'VS Code Remote Containers', 'GitHub Codespaces', 'JetBrains Gateway'] },
+      { cat: 'AI agent workflows', desc: 'Teams that used Dev Environments to isolate agent work should migrate to Docker Sandboxes (SBX) — better isolation, governance policies, and sbx kits replace the Dev Environments concept for agentic use cases', examples: ['Docker Sandboxes', 'sbx run', 'sbx kits', 'AI Governance'] }
+    ]
+  },
+  testcontainers: {
+    icon: '🧪', name: 'Testcontainers', color: '#2dd4a0',
+    tagline: 'Spin up real containerized services (databases, queues, APIs) directly in your test code',
+    values: [
+      'Available for Java, Go, Python, .NET, Node.js, Rust and more — write tests against real Postgres, Redis, Kafka, or any Docker image instead of fragile mocks',
+      'Containers start before tests, provide a live connection string, and tear down automatically on completion — zero manual cleanup',
+      'Testcontainers Cloud offloads container startup to a managed cloud service, eliminating Docker-in-Docker on CI runners and speeding up test pipelines',
+      'Now under the Docker umbrella (acquired 2023) with long-term OSS stewardship commitment and growing first-party integration with Docker Desktop',
+      '50+ pre-built modules cover the most common dependencies (PostgreSQL, MongoDB, LocalStack, Kafka, Elasticsearch) with sane defaults and no boilerplate'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'Testcontainers Cloud eliminates Docker-in-Docker on CI — tests run against real containers in a managed cloud environment without privileged runner requirements', examples: ['GitHub Actions', 'GitLab CI', 'CircleCI', 'Jenkins', 'TC Cloud'] },
+      { cat: 'IaC / Platform', desc: 'Platform engineering teams can provision Testcontainers Cloud workspaces centrally so all developers share the same container infrastructure budget and region configuration', examples: ['TC Cloud API', 'Org settings', 'Budget controls'] },
+      { cat: 'Observability', desc: 'Container startup times, failure rates, and resource usage from Testcontainers sessions surface in observability platforms to help identify slow or flaky test environment dependencies', examples: ['Datadog', 'Grafana', 'TC Cloud dashboard', 'OpenTelemetry'] }
+    ]
+  },
+  offload: {
+    icon: '☁️', name: 'Docker Offload', color: '#2dd4a0',
+    tagline: 'Transparently redirect docker build and docker run to cloud infrastructure from your local CLI',
+    values: [
+      'Zero CLI changes required — developers run docker build and docker run exactly as before; Offload intercepts and executes in the cloud transparently',
+      'Eliminates resource contention on developer laptops during heavy builds, large integration tests, or ML inference workloads',
+      'Cloud runners have more CPU, RAM, and network bandwidth — multi-platform image builds that take 20 minutes locally can finish in 2 minutes in the cloud',
+      'Enabled with a single toggle in Docker Desktop settings — no config files, no new tooling, no changes to Dockerfiles or compose.yaml',
+      'Pairs with Testcontainers Cloud to offload both builds and test container infrastructure simultaneously, freeing laptops for interactive work'
+    ],
+    integrations: [
+      { cat: 'CI / CD', desc: 'Shared cache between Offload and CI runners means local builds warm the CI cache and vice versa — dramatically faster first-run CI times for new branches', examples: ['GitHub Actions', 'GitLab CI', 'BuildKit remote cache', 'Shared runners'] },
+      { cat: 'Hosting / Cloud', desc: 'Docker Offload can target your existing cloud account — builds run in your VPC, images stay in your registry, and compute costs land on your existing cloud bill', examples: ['AWS', 'GCP', 'Azure', 'Fly.io', 'Regional runners'] },
+      { cat: 'Observability', desc: 'Build duration, queue time, and resource usage metrics from Docker Offload feed into observability platforms — giving platform teams visibility into developer productivity and build infrastructure utilization', examples: ['Datadog', 'Grafana', 'Build metrics', 'Platform engineering'] }
     ]
   },
   cli: {
@@ -516,18 +562,19 @@ const DATA = {
   },
   dhi: {
     icon: '🏢', name: 'Docker Hardened Images (DHI)', color: '#f5c842',
-    tagline: 'Minimal, distroless enterprise images built for security and compliance',
+    tagline: 'Minimal, distroless enterprise images with CVE-near-zero SLA, Cosign signatures, and built-in compliance attestations',
     values: [
-      'Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; dramatically reduces attack surface',
-      'CVE-near-zero guarantee: Docker patches DHIs within 24h of a disclosed vulnerability in a base dependency',
-      'Signed with Cosign and include SBOM and provenance attestations for full supply chain traceability',
-      'Drop-in replacements for popular Official Images — same tags, same interface, hardened internals',
-      'Compliance-ready for SOC 2, PCI-DSS, and NIST 800-190 container security requirements'
+      'Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; dramatically reduces the attack surface of every container image your team ships',
+      'CVE-near-zero SLA: Docker patches DHIs within 24 hours of a disclosed vulnerability — no waiting for upstream OS vendor release cycles',
+      'Signed with Cosign and shipped with SBOM and provenance attestations baked in — every DHI image is cryptographically traceable from source to deployment',
+      'Drop-in replacements for popular Official Images (nginx, node, python, java) — same tags, same interface, hardened internals with no Dockerfile changes required',
+      'Compliance-ready for SOC 2, PCI-DSS, NIST 800-190, and FedRAMP container security controls out of the box'
     ],
     integrations: [
-      { cat: 'Security', desc: 'DHI provenance attestations can be verified by policy engines (OPA, Kyverno) at deploy time to enforce signed-image-only policies', examples: ['OPA', 'Kyverno', 'Cosign', 'Sigstore'] },
-      { cat: 'Hosting', desc: 'Ideal base for workloads on EKS, GKE, or AKS with PodSecurityPolicy or OPA Gatekeeper enforcing minimal-image requirements', examples: ['EKS', 'GKE', 'AKS'] },
-      { cat: 'CI / CD', desc: 'Replace FROM ubuntu or FROM node in Dockerfiles with DHI equivalents and add Scout policy checks to CI for ongoing compliance', examples: ['Docker Scout', 'GitHub Actions', 'GitLab CI'] }
+      { cat: 'Security & compliance', desc: 'DHI provenance attestations are verified by OPA Gatekeeper or Kyverno admission controllers at deploy time — unsigned or non-DHI images are rejected before reaching production', examples: ['OPA Gatekeeper', 'Kyverno', 'Cosign', 'Sigstore', 'Vanta', 'Drata'] },
+      { cat: 'CI / CD', desc: 'Replace FROM ubuntu or FROM node in Dockerfiles with DHI equivalents; add docker scout policy checks as a CI gate to enforce DHI baseline compliance on every build', examples: ['Docker Scout', 'GitHub Actions', 'GitLab CI', 'Cosign verify'] },
+      { cat: 'AI Governance', desc: 'Docker AI Governance can mandate DHI as the only permitted base image for AI agent containers — every agent sandbox starts from a cryptographically verified, minimal attack surface enforced at org level', examples: ['Docker AI Governance', 'sbx policy', 'AI Governance console', 'Agent image policy'] },
+      { cat: 'Hosting / Cloud', desc: 'Works as the certified workload base on EKS, GKE, and AKS — cloud providers with admission policies requiring signed images accept DHIs natively via Cosign and OCI referrers', examples: ['EKS', 'GKE', 'AKS', 'OPA Gatekeeper', 'Admission webhook'] }
     ]
   },
   accesstokens: {

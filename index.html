@@ -109,6 +109,10 @@ h1 span { color: var(--blue); }
 .node-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 .node-name { font-size: 10px; font-weight: 600; color: var(--text); }
 .node-desc { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); line-height: 1.3; }
+.node.deprecated { opacity: 0.55; border-style: dashed; }
+.node.deprecated .node-name { text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.node.deprecated .node-desc { font-style: italic; }
+.deprecated-badge { font-size: 7px; font-family: var(--font-mono); background: rgba(240,112,80,0.15); color: #f07050; border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.06em; }
 .node-partner-badge { position: absolute; top: 5px; right: 5px; font-size: 7px; background: var(--purple-light); color: var(--purple); border-radius: 3px; padding: 1px 4px; font-family: var(--font-mono); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
 .node.highlighted .node-partner-badge { opacity: 1; }
 
@@ -241,9 +245,9 @@ h1 span { color: var(--blue); }
           <div class="node-desc">Local dev environment</div>
           <span class="node-partner-badge">partner</span>
         </div>
-        <div class="node" data-id="devenvs" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Dev Environments</span></div>
-          <div class="node-desc">Reproducible workspaces</div>
+        <div class="node deprecated" data-id="devenvs" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Dev Environments<span class="deprecated-badge">deprecated</span></span></div>
+          <div class="node-desc">Superseded by SBX & devcontainer</div>
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node" data-id="cli" onclick="selectNode(this)">
@@ -254,6 +258,20 @@ h1 span { color: var(--blue); }
         <div class="node" data-id="extensions" onclick="selectNode(this)">
           <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker Extensions</span></div>
           <div class="node-desc">Marketplace plugins</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="tier-label">Testing</div>
+        <div class="node" data-id="testcontainers" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0891b2"></span><span class="node-name">Testcontainers</span></div>
+          <div class="node-desc">Real deps in test code</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="offload" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#0891b2"></span><span class="node-name">Docker Offload</span></div>
+          <div class="node-desc">Cloud-accelerated builds & runs</div>
           <span class="node-partner-badge">partner</span>
         </div>
       </div>
@@ -480,17 +498,17 @@ const MARKET = {
 };
 
 const PARTNERS = {
-  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop","sbx","mcpgateway"],                         color: "#5238b8" },
-  idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy","aigovernance"],                   color: "#5238b8" },
-  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub","sbx"],                                   color: "#0d7a5c" },
-  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop","aigovernance","mcpgateway"],  color: "#1a5fad" },
-  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs","sbx"],                          color: "#b83818" },
-  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli","aigovernance","sbx"],                 color: "#92600a" },
-  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions","sbx","aigovernance","mcpgateway"], color: "#993356" },
-  ml:       { name: "ML platforms",              highlights: ["engine","containerd","buildkit","hub","devenvs","compose","sbx","mcpgateway"],     color: "#0d7a5c" },
-  ai:       { name: "AI agents",                 highlights: ["engine","compose","hub","extensions","cli","devenvs","sbx","aigovernance","mcpgateway"], color: "#5238b8" },
-  ide:      { name: "IDE / code editors",        highlights: ["devenvs","extensions","desktop","cli","compose","engine","sbx"],                  color: "#0d7a5c" },
-  aigov:    { name: "AI Governance",             highlights: ["aigovernance","mcpgateway","sbx","audit","accesstokens","orgmgmt"],               color: "#7c3aed" }
+  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop","sbx","mcpgateway","testcontainers","dhi"],                              color: "#5238b8" },
+  idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy","aigovernance"],                                              color: "#5238b8" },
+  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub","sbx","testcontainers","offload","dhi"],                             color: "#0d7a5c" },
+  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop","aigovernance","mcpgateway","offload"],                  color: "#1a5fad" },
+  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs","sbx","offload","dhi"],                                     color: "#b83818" },
+  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli","aigovernance","sbx","dhi"],                                     color: "#92600a" },
+  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions","sbx","aigovernance","mcpgateway"],               color: "#993356" },
+  ml:       { name: "ML platforms",              highlights: ["engine","containerd","buildkit","hub","devenvs","compose","sbx","mcpgateway","offload","dhi"],               color: "#0d7a5c" },
+  ai:       { name: "AI agents",                 highlights: ["engine","compose","hub","extensions","cli","devenvs","sbx","aigovernance","mcpgateway","dhi"],               color: "#5238b8" },
+  ide:      { name: "IDE / code editors",        highlights: ["devenvs","extensions","desktop","cli","compose","engine","sbx","testcontainers"],                           color: "#0d7a5c" },
+  aigov:    { name: "AI Governance",             highlights: ["aigovernance","mcpgateway","sbx","audit","accesstokens","orgmgmt","dhi"],                                   color: "#7c3aed" }
 };
 
 const NODE_DATA = {
@@ -621,21 +639,54 @@ const NODE_DATA = {
   },
   devenvs: {
     icon: "⚙️", name: "Dev Environments",
-    tagline: "The workspace definition standard that connects dev to cloud",
+    tagline: "⚠️ Deprecated — superseded by Docker Sandboxes (SBX) and the devcontainer spec",
     values: [
-      "Dev Environments use the devcontainer spec — supported by VS Code, GitHub Codespaces, and JetBrains",
-      "The compose.yaml backing a Dev Environment is the same file used for CI and staging",
-      "Cloud development platform partners can offer Docker Dev Environments as a hosted service",
-      "Enables environment-as-code — a compelling demo for platform engineering and DevEx teams",
-      "Integration point for IDE vendors, cloud IDEs, and development productivity platforms"
+      "DEPRECATED: Docker is winding down active development of the Dev Environments feature; existing setups continue to work but no new capabilities are planned",
+      "The devcontainer spec (VS Code Remote Containers, GitHub Codespaces) is the recommended migration path for reproducible workspace definitions",
+      "Docker Sandboxes (SBX) supersedes Dev Environments for AI coding agent workflows with stronger isolation and governance",
+      "compose.yaml-based workflows remain fully supported — only the Docker Desktop Dev Environments UI layer is being deprecated",
+      "Partners and teams using devcontainer.json directly (without the Docker Desktop Dev Environments wrapper) are unaffected"
     ],
     opps: {
-      hosting: { type: "Hosted dev environments", desc: "Host Docker Dev Environments in your cloud so customers get a full pre-configured workspace in seconds. Compete with Codespaces and Gitpod.", tags: ["devcontainer spec","Compose Spec","Remote container"] },
-      iac:     { type: "Environment-as-code",      desc: "IaC tools that manage devcontainer.json and compose.yaml alongside infrastructure definition close the loop between prod infra and dev environment parity.", tags: ["devcontainer.json","Terraform","Pulumi"] },
-      ci:      { type: "Dev-CI parity",            desc: "CI platforms using the same compose.yaml as Dev Environments guarantee dev-CI parity — a strong joint value proposition for DevEx teams.", tags: ["Compose Spec","devcontainer","GitHub Actions"] },
-      ml:      { type: "ML dev environment",       desc: "ML platforms can ship devcontainer configs pre-loaded with GPU drivers, CUDA, Jupyter, and common ML libraries so data scientists get a working environment from a single URL.", tags: ["devcontainer spec","CUDA","Jupyter","ML toolchain"] },
-      ai:      { type: "Agent dev workspace",      desc: "AI agent framework providers can ship devcontainer configs that include all agent dependencies, tool servers, and model endpoints so developers build agents without setup friction.", tags: ["devcontainer spec","Agent toolchain","LLM proxy","MCP servers"] },
-      ide:     { type: "Devcontainer authoring",   desc: "IDEs that generate and validate devcontainer.json and compose.yaml from a GUI give developers a no-YAML path to reproducible Docker environments. VS Code Remote Containers is the reference integration.", tags: ["devcontainer spec","Remote - Containers","Compose Spec","Dev Environments API"] }
+      hosting: { type: "Migration path partner",  desc: "Cloud IDE and hosted dev environment partners (Codespaces, Gitpod) are the natural migration destination for teams moving off Docker Dev Environments.", tags: ["devcontainer spec","GitHub Codespaces","Gitpod","Remote container"] },
+      ide:     { type: "Devcontainer authoring",  desc: "IDEs with native devcontainer.json support offer the recommended replacement — guide customers from the Docker Dev Environments UI to native IDE devcontainer tooling.", tags: ["devcontainer spec","VS Code Remote","JetBrains Gateway","Dev Containers ext"] },
+      iac:     { type: "Environment migration",   desc: "IaC tools can help teams migrate Dev Environments configs to pure compose.yaml + devcontainer.json combos that work without the deprecated Docker Desktop wrapper.", tags: ["devcontainer.json","Compose Spec","Migration tooling"] }
+    }
+  },
+  testcontainers: {
+    icon: "🧪", name: "Testcontainers",
+    tagline: "Spin up real containerized dependencies (databases, queues, services) directly in test code",
+    values: [
+      "Open-source library (now under the Docker umbrella) available for Java, Go, Python, .NET, Node.js, Rust, and more — test with real services, not mocks",
+      "Tests spin up a real Postgres, Redis, Kafka, or any Docker image as a throwaway container, get a live connection string, and the container tears down on test completion",
+      "Testcontainers Cloud offloads container startup from developer laptops and CI runners to a managed cloud service, eliminating Docker-in-Docker and speeding up CI",
+      "Docker has committed to long-term stewardship of the open-source project under the testcontainers.com umbrella since the 2023 acquisition",
+      "Modules library covers 50+ pre-configured integrations (PostgreSQL, MongoDB, LocalStack, Kafka, Elasticsearch) with sane defaults out of the box"
+    ],
+    opps: {
+      ci:      { type: "Cloud test acceleration",  desc: "CI platforms that integrate Testcontainers Cloud let customers run container-backed tests without Docker-in-Docker or privileged runners — a major pain point for enterprise CI.", tags: ["Testcontainers Cloud","CI integration","DinD-free","Runner optimization"] },
+      isv:     { type: "Official TC module",        desc: "ISVs that publish an official Testcontainers module for their product give developers a zero-config path to integration-testing against the real service — strong adoption signal.", tags: ["TC module","testcontainers-go","testcontainers-java","Module registry"] },
+      hosting: { type: "Testcontainers Cloud host", desc: "Cloud providers can partner to host Testcontainers Cloud infrastructure, offering customers low-latency container startup in the same region as their CI runners.", tags: ["TC Cloud","Managed containers","Regional infra","CI proximity"] },
+      ide:     { type: "Test runner integration",   desc: "IDEs with integrated test runners can detect Testcontainers usage and offer to start/stop the required containers directly from the editor, surfacing container logs alongside test output.", tags: ["TC local","IDE test runner","Container lifecycle","Log streaming"] },
+      obs:     { type: "Test environment telemetry", desc: "Observability partners can instrument Testcontainers container startup times, failure rates, and resource usage to help teams identify slow or flaky test environment dependencies.", tags: ["TC metrics","Startup latency","Flaky test detection","OpenTelemetry"] }
+    }
+  },
+  offload: {
+    icon: "☁️", name: "Docker Offload",
+    tagline: "Run docker build and docker run in the cloud from your local CLI — no infrastructure to manage",
+    values: [
+      "Transparently redirects docker build and docker run commands from the local machine to cloud infrastructure — developers use the same CLI they already know",
+      "Eliminates resource contention on developer laptops during heavy builds or resource-intensive workloads (ML inference, large integration tests)",
+      "Cloud runners have more CPU, memory, and network bandwidth than local machines — build times drop dramatically, especially for multi-platform images",
+      "Integrates with Docker Desktop via a settings toggle — no CLI changes, no new tooling, no config files to learn",
+      "Pairs with Testcontainers Cloud to offload both builds and test container infrastructure simultaneously, maximizing local machine availability"
+    ],
+    opps: {
+      hosting:  { type: "Cloud compute partner",    desc: "Cloud providers can partner to supply the compute layer behind Docker Offload — customers get low-latency build and run offload to infrastructure in their existing cloud account.", tags: ["Offload backend","Cloud compute","Regional runners","Docker Offload API"] },
+      ci:       { type: "Shared offload infra",      desc: "CI platforms that support Docker Offload allow teams to share build infrastructure between local dev and CI runs — same cache, same runners, faster feedback loops.", tags: ["Shared build cache","Offload API","CI runners","BuildKit remote"] },
+      obs:      { type: "Offload observability",     desc: "Observability partners can surface Docker Offload metrics (build duration, queue time, resource usage) alongside application telemetry to give platform teams visibility into developer productivity.", tags: ["Build metrics","Queue latency","Resource usage","Offload telemetry"] },
+      ml:       { type: "ML build offload",          desc: "ML platforms can point Docker Offload at GPU-equipped cloud runners so data scientists run docker build for CUDA-heavy model images without local GPU or long laptop build times.", tags: ["GPU runners","CUDA builds","docker buildx","Offload backend"] },
+      iac:      { type: "Infrastructure abstraction", desc: "IaC tools that provision Docker Offload backends as versioned infrastructure let platform teams centrally manage build resources and quota — GitOps for developer compute.", tags: ["Offload API","Terraform","Build quota","Platform engineering"] }
     }
   },
   cli: {
@@ -689,19 +740,24 @@ const NODE_DATA = {
     }
   },
   dhi: {
-    icon: "🏢", name: "Docker Hardened Images",
-    tagline: "The enterprise security image program built for compliance-driven buyers",
+    icon: "🏢", name: "Docker Hardened Images (DHI)",
+    tagline: "Minimal, distroless enterprise images with CVE-near-zero SLA, cryptographic provenance, and built-in compliance",
     values: [
-      "DHI program creates an enterprise-tier distribution channel for hardened, compliant software images",
-      "ISVs can co-publish DHI-compatible versions of their software for security-conscious enterprise buyers",
-      "DHI images come with cryptographic provenance — a trust signal recognized by compliance frameworks",
-      "The CVE-near-zero SLA is a co-marketing hook for enterprise security sales motions",
-      "Compliance certifications (SOC 2, NIST 800-190) are easier to achieve with DHI as the base layer"
+      "Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; dramatically reduces the attack surface of every container image",
+      "CVE-near-zero SLA: Docker patches DHIs within 24 hours of a disclosed vulnerability in a base dependency — no waiting for upstream OS vendor schedules",
+      "Signed with Cosign and shipped with SBOM and provenance attestations baked in — every DHI image is cryptographically traceable from source to deployment",
+      "Drop-in replacements for popular Official Images (nginx, node, python, java) — same tags and interface, hardened internals, no Dockerfile changes required",
+      "Compliance-ready for SOC 2, PCI-DSS, NIST 800-190, and FedRAMP container security controls out of the box"
     ],
     opps: {
-      security: { type: "Compliance co-sell",    desc: "Position DHI as the foundation for your compliance scanning product — start from a near-zero CVE base, then validate. Joint reference architecture for PCI-DSS and SOC 2 workloads.", tags: ["DHI","Cosign","SBOM attestation","Compliance"] },
-      hosting:  { type: "Enterprise workload",   desc: "Cloud providers certifying workloads built on DHI as security-baseline compliant create a differentiated enterprise offering and reduce shared-responsibility surface area.", tags: ["DHI","OPA Gatekeeper","Admission policy"] },
-      isv:      { type: "Enterprise distribution", desc: "Publish a DHI-compatible version of your software. Enterprise buyers with strict image policies can use your product without security exceptions.", tags: ["DHI program","Cosign","Verified Publisher"] }
+      security: { type: "Compliance co-sell",        desc: "Position DHI as the foundation for your compliance scanning product — start from a CVE-near-zero base, then validate the application layer. Joint reference architecture for PCI-DSS and SOC 2 workloads.", tags: ["DHI","Cosign","SBOM attestation","OPA","Kyverno"] },
+      hosting:  { type: "Certified workload base",   desc: "Cloud providers that pre-certify workloads built on DHI as security-baseline compliant create a differentiated enterprise offering and reduce shared-responsibility audit surface for mutual customers.", tags: ["DHI","OPA Gatekeeper","Admission policy","EKS","GKE","AKS"] },
+      isv:      { type: "Enterprise image tier",     desc: "Publish a DHI-compatible variant of your software image alongside the standard version. Enterprise buyers with strict image policies can adopt your product without security exceptions or waivers.", tags: ["DHI program","Cosign","Verified Publisher","SBOM"] },
+      ci:       { type: "Hardened base in pipelines", desc: "CI platforms can detect FROM instructions in Dockerfiles and recommend DHI equivalents, then verify DHI signatures via Scout policy checks as a mandatory gate before image promotion.", tags: ["Docker Scout","DHI","Cosign verify","FROM detection","Pipeline gate"] },
+      iac:      { type: "Enforced base image policy", desc: "IaC tools and admission controllers (OPA Gatekeeper, Kyverno) can enforce DHI-only policies at deploy time — any image not based on a signed DHI is rejected before it reaches production.", tags: ["OPA Gatekeeper","Kyverno","Terraform","Admission webhook","Sigstore"] },
+      ml:       { type: "Minimal ML serving base",   desc: "ML model serving containers built on DHI (python-slim, java) start from a near-zero CVE baseline — critical for multi-tenant inference infrastructure where a vulnerable base image affects every model endpoint.", tags: ["DHI python","DHI java","Model serving","TorchServe","vLLM"] },
+      ai:       { type: "Hardened agent base",       desc: "AI coding agents that run inside Docker Sandboxes can be required to use DHI-based images — governance policies enforce this so every agent session starts from a cryptographically verified, minimal attack surface.", tags: ["DHI","sbx policy","AI Governance","Agent image","Cosign verify"] },
+      aigov:    { type: "Governed image standard",   desc: "Docker AI Governance policies can mandate DHI as the only permitted base image for AI agent containers — enforced at the org level so developers cannot run agents on unverified images.", tags: ["AI Governance","DHI","Image policy","Cosign","NIST AI RMF"] }
     }
   },
   accesstokens: {
