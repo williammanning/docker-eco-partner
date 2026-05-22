@@ -222,6 +222,12 @@ h1 span { color: var(--blue); }
         <div class="p-type">VS Code, JetBrains, Cursor, etc.</div>
         <div class="p-market" data-partner="ide"></div>
       </button>
+
+      <button class="partner-btn" data-partner="aigov" onclick="selectPartner(this)">
+        <div class="p-row"><span class="p-icon">⚖️</span><span class="p-name">AI Governance</span></div>
+        <div class="p-type">Policy, audit, compliance for AI agents</div>
+        <div class="p-market" data-partner="aigov"></div>
+      </button>
     </div>
 
     <div class="eco-right">
@@ -320,6 +326,25 @@ h1 span { color: var(--blue); }
         <div class="node" data-id="imagepolicy" onclick="selectNode(this)">
           <div class="node-top"><span class="node-dot" style="background:#b83818"></span><span class="node-name">Image Access Mgmt</span></div>
           <div class="node-desc">Registry policy controls</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+      </div>
+
+      <div class="tier">
+        <div class="tier-label">AI runtime</div>
+        <div class="node" data-id="sbx" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker Sandboxes (SBX)</span></div>
+          <div class="node-desc">microVM isolation + sbx CLI</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="aigovernance" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker AI Governance</span></div>
+          <div class="node-desc">Centralized agent policy control</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="mcpgateway" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">MCP Gateway</span></div>
+          <div class="node-desc">Policy layer for MCP tool calls</div>
           <span class="node-partner-badge">partner</span>
         </div>
       </div>
@@ -440,20 +465,32 @@ const MARKET = {
       { name: "Neovim", pct: 9 },
       { name: "Sublime Text", pct: 6 }
     ]
+  },
+  aigov: {
+    note: "AI governance and agent policy platform market by enterprise deployments (IDC MarketScape AI Governance 2025-2026).",
+    color: "#7c3aed",
+    players: [
+      { name: "Microsoft Purview", pct: 30 },
+      { name: "Docker AI Governance", pct: 18 },
+      { name: "IBM OpenScale/AI", pct: 14 },
+      { name: "ServiceNow AI Gov", pct: 11 },
+      { name: "OneTrust AI Gov", pct: 8 }
+    ]
   }
 };
 
 const PARTNERS = {
-  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop"],                        color: "#5238b8" },
-  idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy"],             color: "#5238b8" },
-  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub"],                    color: "#0d7a5c" },
-  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop"],        color: "#1a5fad" },
-  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs"],           color: "#b83818" },
-  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli"],                color: "#92600a" },
-  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions"], color: "#993356" },
-  ml:       { name: "ML platforms",             highlights: ["engine","containerd","buildkit","hub","devenvs","compose"],   color: "#0d7a5c" },
-  ai:       { name: "AI agents",                highlights: ["engine","compose","hub","extensions","cli","devenvs"],        color: "#5238b8" },
-  ide:      { name: "IDE / code editors",       highlights: ["devenvs","extensions","desktop","cli","compose","engine"],   color: "#0d7a5c" }
+  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop","sbx","mcpgateway"],                         color: "#5238b8" },
+  idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy","aigovernance"],                   color: "#5238b8" },
+  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub","sbx"],                                   color: "#0d7a5c" },
+  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop","aigovernance","mcpgateway"],  color: "#1a5fad" },
+  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs","sbx"],                          color: "#b83818" },
+  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli","aigovernance","sbx"],                 color: "#92600a" },
+  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions","sbx","aigovernance","mcpgateway"], color: "#993356" },
+  ml:       { name: "ML platforms",              highlights: ["engine","containerd","buildkit","hub","devenvs","compose","sbx","mcpgateway"],     color: "#0d7a5c" },
+  ai:       { name: "AI agents",                 highlights: ["engine","compose","hub","extensions","cli","devenvs","sbx","aigovernance","mcpgateway"], color: "#5238b8" },
+  ide:      { name: "IDE / code editors",        highlights: ["devenvs","extensions","desktop","cli","compose","engine","sbx"],                  color: "#0d7a5c" },
+  aigov:    { name: "AI Governance",             highlights: ["aigovernance","mcpgateway","sbx","audit","accesstokens","orgmgmt"],               color: "#7c3aed" }
 };
 
 const NODE_DATA = {
@@ -729,6 +766,66 @@ const NODE_DATA = {
       security: { type: "Policy complement",      desc: "Docker IAM enforces approved registries at the Desktop level; pair with Kyverno or OPA for the same policy at Kubernetes admission time.", tags: ["IAM API","OPA","Kyverno","Admission webhook"] },
       hosting:  { type: "Approved registry",      desc: "Cloud providers whose registry is added to Docker IAM allowlists become the default trusted image source for enterprise Docker customers.", tags: ["ECR","GCR","Artifactory","Harbor"] },
       idp:      { type: "Policy-as-identity",     desc: "Tie Docker IAM registry policies to IdP groups — access changes in one place, enforced everywhere.", tags: ["SCIM groups","IAM API","SAML attributes"] }
+    }
+  },
+  sbx: {
+    icon: "🧱", name: "Docker Sandboxes (SBX)",
+    tagline: "microVM isolation for AI agents + sbx CLI for launching, managing, and governing sandboxes",
+    values: [
+      "Wraps AI coding agents (Claude Code, Codex, Gemini CLI, Copilot) in lightweight microVMs — a hard hypervisor boundary between agent and host OS prevents container escapes",
+      "Each sandbox has its own Docker daemon, filesystem, and network stack; agents install packages, build images, and modify configs without touching your machine",
+      "sbx run <agent> launches any agent in a single command; the interactive TUI dashboard shows live sandbox status, network activity, resource usage, and active governance policies",
+      "sbx kits let partners package a pre-configured sandbox (agent + toolchain + credentials + network policy) as a reusable template distributable by a single kit name",
+      "Branch mode creates a Git-worktree-backed sandbox per task so multiple agents work in parallel on the same repo without conflicting changes; sbx cp provides bidirectional host-sandbox file transfer"
+    ],
+    opps: {
+      aigov:    { type: "Governed execution",       desc: "AI Governance policies defined in the Admin Console are enforced inside every SBX sandbox — partners building compliance tooling consume sandbox audit events for policy verification.", tags: ["sbx policy","Audit events","Governance API","Compliance"] },
+      ai:       { type: "Safe agent execution",     desc: "AI agent framework partners certifying their agents run inside Docker Sandboxes can offer enterprise customers a hardened, auditable execution environment as a first-class deployment option.", tags: ["sbx run","Agent isolation","sbx kits","Credential injection"] },
+      security: { type: "Sandbox security layer",   desc: "Security partners integrate with SBX network egress policies and filesystem mount controls to enforce data loss prevention and threat detection at the microVM boundary.", tags: ["sbx policy network","sbx policy fs","eBPF","Egress proxy"] },
+      ci:       { type: "Isolated CI agent tasks",  desc: "CI platforms that invoke sbx run as a pipeline step execute AI-assisted code generation or refactoring inside a clean microVM per job — no state bleeds between runs.", tags: ["sbx run","sbx rm","GitHub Actions","GitLab CI","Pipeline isolation"] },
+      hosting:  { type: "Hosted sandbox service",   desc: "Cloud providers can offer Docker Sandboxes as a managed service — customers get a hosted sbx endpoint and run agents without local microVM setup, billed per sandbox-hour.", tags: ["sbx API","Remote sandbox","Hosted microVM","Fly Machines"] },
+      iac:      { type: "Sandbox-as-code",          desc: "IaC tools can script sandbox lifecycle via the sbx CLI — create sandboxes, inject credentials, run agents, copy outputs, and destroy, fully automated as part of infrastructure pipelines.", tags: ["sbx CLI","sbx run","sbx cp","sbx rm","Terraform exec"] },
+      ml:       { type: "Isolated ML execution",    desc: "ML platforms run training jobs and inference tasks inside SBX sandboxes so untrusted model code is hardware-isolated from the host — critical for multi-tenant ML environments.", tags: ["sbx run","GPU passthrough","microVM","Model sandbox"] },
+      ide:      { type: "IDE sandbox launch",       desc: "IDEs integrate the sbx CLI to launch agent sandboxes on the current workspace with one click — AI coding agents run fully isolated from the host OS, controlled from inside the editor.", tags: ["sbx CLI","sbx run","IDE extension","Workspace mount"] },
+      isv:      { type: "sbx kit distribution",     desc: "ISVs publish sbx kits that configure a sandbox with their toolchain pre-installed — developers adopt the product with a single sbx run <kit-name> command, no manual setup.", tags: ["sbx kits","sbx-kits-contrib","Docker Hub","Kit registry"] }
+    }
+  },
+  aigovernance: {
+    icon: "⚖️", name: "Docker AI Governance",
+    tagline: "Centralized control plane for AI agent policy — network, filesystem, credentials, and MCP tools",
+    values: [
+      "Admins define policy once in the Docker Admin Console; it propagates automatically to every developer machine without per-machine setup",
+      "Four control surfaces in one console: network access (domain/CIDR allow-deny), filesystem mounts (read-only or read-write), credential injection, and MCP tool permissions",
+      "Organization governance overrides local sbx policies — developers cannot bypass centrally-defined security rules",
+      "Every agent session produces a full audit trail of network calls, filesystem access, and MCP tool invocations for compliance reporting",
+      "Available as a separate paid subscription on top of Docker Business, purpose-built for enterprises deploying AI agents at scale"
+    ],
+    opps: {
+      aigov:    { type: "Governance platform",      desc: "AI governance platform partners consume Docker AI Governance audit events via API to correlate agent activity with broader enterprise AI risk posture and regulatory compliance frameworks.", tags: ["Governance API","Audit export","EU AI Act","NIST AI RMF"] },
+      idp:      { type: "Identity-driven policy",   desc: "Policies in Docker AI Governance scope to IdP groups via SCIM sync — engineering, contractors, and finance get different agent permissions managed from the same identity source.", tags: ["SCIM groups","Policy scoping","SAML","Okta","Azure AD"] },
+      security: { type: "Agent threat detection",   desc: "Security partners subscribe to Docker AI Governance audit streams to detect anomalous agent behavior — unexpected network destinations, unauthorized file access, or credential misuse.", tags: ["Audit stream","SIEM","DLP","Behavioral analytics"] },
+      obs:      { type: "Agent observability",      desc: "Observability partners ingest Docker AI Governance telemetry to give engineering leaders visibility into agent activity alongside traditional infrastructure metrics.", tags: ["Governance telemetry","Datadog","OpenTelemetry","Agent traces"] },
+      iac:      { type: "Policy-as-code",           desc: "IaC tools that manage Docker AI Governance policy definitions as versioned code let security teams apply GitOps workflows to agent permissions — peer review, rollback, and audit trail built in.", tags: ["Governance API","Terraform","Policy versioning","GitOps"] },
+      ai:       { type: "Compliant agent runtime",  desc: "AI agent framework partners that integrate with Docker AI Governance can certify their frameworks as enterprise-ready — governance policies follow the agent regardless of which developer runs it.", tags: ["Governance API","Agent certification","Policy propagation","Enterprise AI"] }
+    }
+  },
+  mcpgateway: {
+    icon: "🔀", name: "MCP Gateway",
+    tagline: "Policy enforcement chokepoint for all Model Context Protocol tool calls",
+    values: [
+      "Sits between AI agents and MCP servers, inspecting and enforcing policy on every tool call before it reaches external services",
+      "Admins allowlist or blocklist specific MCP tools and servers in the Docker Admin Console — agents can only call approved tools",
+      "Full audit log of every MCP tool invocation: which agent called which tool, with what parameters, and what was returned",
+      "As the MCP ecosystem grows (more servers, more tools, more enterprise integrations), the gateway becomes the universal policy layer for the entire MCP supply chain",
+      "Integrates with Docker AI Governance so MCP tool permissions are part of the same centralized policy as network and filesystem controls"
+    ],
+    opps: {
+      aigov:    { type: "MCP policy integration",   desc: "AI governance platforms consume MCP Gateway audit logs to demonstrate to auditors exactly which AI tools accessed which enterprise data and under what authorization.", tags: ["MCP audit log","Tool call policy","Governance API","EU AI Act"] },
+      ai:       { type: "Certified MCP server",     desc: "AI agent framework and MCP server partners that certify compatibility with Docker MCP Gateway appear in the Docker-curated approved tools catalog, building enterprise buyer trust.", tags: ["MCP server","sbx kits","Approved tools catalog","Certification"] },
+      security: { type: "Tool call inspection",     desc: "Security partners integrate with MCP Gateway to inspect tool call payloads for data exfiltration patterns, prompt injection, and policy violations before calls are executed.", tags: ["Tool call inspection","DLP","Prompt injection","MCP policy"] },
+      obs:      { type: "MCP observability",        desc: "Observability platforms ingesting MCP Gateway telemetry surface per-tool latency, error rates, and usage patterns — giving teams visibility into their AI agent tool dependencies.", tags: ["MCP telemetry","Tool latency","OpenTelemetry","Datadog"] },
+      ml:       { type: "ML tool governance",       desc: "ML platforms exposing data retrieval and model management as MCP tools use the Gateway to enforce which models and datasets AI coding agents can access during a session.", tags: ["MCP tools","Data access policy","Model access","ML tool catalog"] },
+      isv:      { type: "MCP server distribution",  desc: "ISVs publishing their product capabilities as MCP servers can certify Gateway compatibility and appear in Docker's approved MCP catalog — reaching every enterprise agent deployment.", tags: ["MCP server","Gateway certification","Approved catalog","ISV listing"] }
     }
   }
 };

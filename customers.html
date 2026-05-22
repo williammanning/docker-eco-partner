@@ -297,6 +297,26 @@ h1 span { color: var(--blue-bright); }
       </div>
     </div>
 
+    <!-- AI runtime tier -->
+    <div class="tier">
+      <div class="tier-label" style="color:#a78bfa">AI runtime</div>
+      <div class="node purple" data-id="sbx" onclick="select(this)">
+        <span class="node-icon">🧱</span>
+        <div class="node-name">Docker Sandboxes (SBX)</div>
+        <div class="node-desc">microVM isolation + sbx CLI</div>
+      </div>
+      <div class="node purple" data-id="aigovernance" onclick="select(this)">
+        <span class="node-icon">⚖️</span>
+        <div class="node-name">Docker AI Governance</div>
+        <div class="node-desc">Centralized agent policy</div>
+      </div>
+      <div class="node purple" data-id="mcpgateway" onclick="select(this)">
+        <span class="node-icon">🔀</span>
+        <div class="node-name">MCP Gateway</div>
+        <div class="node-desc">MCP tool call policy layer</div>
+      </div>
+    </div>
+
     <!-- External integrations -->
     <div class="ext-band">
       <div class="ext-title">// customer integrations — your existing toolchain connects here</div>
@@ -572,6 +592,54 @@ const DATA = {
       { cat: 'Security', desc: 'Pair with OPA or Kyverno admission controllers to enforce the same approved-registry policy at Kubernetes deploy time', examples: ['OPA Gatekeeper', 'Kyverno', 'Styra DAS'] },
       { cat: 'Hosting', desc: 'Point allowed registries at ECR, GCR, or Artifactory to ensure all images go through your enterprise scanning pipeline', examples: ['ECR', 'GCR', 'JFrog Artifactory', 'Harbor'] },
       { cat: 'IDP / SSO', desc: 'Policy is tied to org membership — developers who authenticate via SSO automatically inherit their team\'s image access policy', examples: ['Okta', 'Azure AD', 'Google Workspace'] }
+    ]
+  },
+  sbx: {
+    icon: '🧱', name: 'Docker Sandboxes (SBX)', color: '#a78bfa',
+    tagline: 'microVM isolation for AI coding agents — each sandbox gets its own kernel, daemon, and network stack',
+    values: [
+      'Wraps AI coding agents (Claude Code, Codex, Gemini CLI, Copilot CLI) in lightweight microVMs — a hard hypervisor boundary prevents container escapes from reaching your host OS',
+      'Each sandbox has its own Docker daemon, filesystem, and network stack so agents can install packages, build images, and modify configs without any risk to your machine',
+      'sbx run <agent> launches any agent in a single command; the interactive TUI dashboard shows live sandbox status, network activity, resource usage, and active governance policies',
+      'sbx kits let teams package a pre-configured sandbox (agent + toolchain + credentials + network policy) as a reusable template shared via a single kit name',
+      'Branch mode creates a Git-worktree-backed sandbox per task so multiple agents work in parallel without conflicting changes; sbx cp provides bidirectional host-sandbox file transfer'
+    ],
+    integrations: [
+      { cat: 'AI Agents', desc: 'Run Claude Code, Codex CLI, Gemini CLI, Copilot CLI inside SBX sandboxes for safe autonomous operation; sbx kits give frameworks a one-command install path for every developer', examples: ['Claude Code', 'Codex CLI', 'Gemini CLI', 'Copilot CLI', 'sbx kits'] },
+      { cat: 'CI / CD', desc: 'Scriptable sbx CLI lets CI pipelines create sandboxes, run AI agent tasks, copy output files, and destroy sandboxes as fully automated workflow steps', examples: ['GitHub Actions', 'GitLab CI', 'sbx run', 'sbx cp', 'sbx rm'] },
+      { cat: 'Observability', desc: 'TUI dashboard and sbx policy ls surface live sandbox status and active governance rules; network proxy logs expose all agent outbound calls for auditing', examples: ['sbx TUI', 'sbx policy ls', 'Network proxy logs', 'Datadog'] }
+    ]
+  },
+  aigovernance: {
+    icon: '⚖️', name: 'Docker AI Governance', color: '#a78bfa',
+    tagline: 'One admin console to govern AI agent behavior across your entire organization',
+    values: [
+      'Define agent policy once in the Docker Admin Console — it propagates automatically to every developer machine, no per-machine setup or tickets required',
+      'Four control surfaces in one place: network access (domain/CIDR allow-deny rules), filesystem mounts (read-only or read-write scopes), credential injection, and MCP tool permissions',
+      'Organization governance overrides local sbx policies — developers cannot bypass centrally-defined rules, even if they try to set conflicting local policies',
+      'Full audit trail of every agent session: which network endpoints were called, which files were accessed, which MCP tools were invoked, and by whom',
+      'Available as a separate paid subscription on Docker Business — purpose-built for enterprises deploying AI agents at scale with compliance requirements'
+    ],
+    integrations: [
+      { cat: 'IDP / SSO', desc: 'Governance policies can be scoped to IdP groups via SCIM sync — engineering, contractors, and finance get different agent permissions managed from your existing identity source', examples: ['Okta', 'Azure AD', 'Google Workspace', 'SCIM'] },
+      { cat: 'Observability', desc: 'AI Governance audit streams feed into SIEM and observability platforms to give security teams visibility into agent activity alongside infrastructure telemetry', examples: ['Splunk', 'Datadog SIEM', 'Elastic', 'OpenTelemetry'] },
+      { cat: 'Security', desc: 'Governance audit logs provide the evidence trail required by SOC 2, EU AI Act, and NIST AI RMF — demonstrating what your AI agents did, what they touched, and who authorized it', examples: ['Vanta', 'Drata', 'EU AI Act', 'NIST AI RMF'] }
+    ]
+  },
+  mcpgateway: {
+    icon: '🔀', name: 'MCP Gateway', color: '#a78bfa',
+    tagline: 'Policy enforcement layer for all Model Context Protocol tool calls your agents make',
+    values: [
+      'Sits between your AI agents and MCP servers, inspecting every tool call and enforcing policy before it reaches external services or internal data',
+      'Admins allowlist or blocklist specific MCP tools and servers in the Docker Admin Console — agents can only call approved tools, not the entire MCP ecosystem',
+      'Complete audit log of every MCP tool invocation: which agent called which tool, with what parameters, and what was returned — essential for compliance and debugging',
+      'As the MCP ecosystem grows, the Gateway becomes your universal policy enforcement point regardless of which MCP servers or tools your agents use',
+      'Integrates with Docker AI Governance so MCP tool permissions live in the same centralized policy console as network and filesystem controls'
+    ],
+    integrations: [
+      { cat: 'AI Agents', desc: 'Any MCP-compatible AI agent framework routes its tool calls through the Gateway — LangChain, AutoGen, CrewAI, and custom agents all get the same policy enforcement automatically', examples: ['LangChain', 'AutoGen', 'CrewAI', 'Claude Code', 'MCP SDK'] },
+      { cat: 'Security', desc: 'MCP Gateway audit logs expose the exact tool calls, parameters, and responses for every agent session — enabling DLP, prompt injection detection, and anomaly alerting on AI tool usage', examples: ['Splunk', 'Datadog', 'Wiz', 'DLP tools'] },
+      { cat: 'Observability', desc: 'Per-tool call latency, error rates, and usage patterns from the Gateway feed into observability platforms — giving teams visibility into their AI agent tool dependencies and failure modes', examples: ['Datadog', 'Grafana', 'OpenTelemetry', 'New Relic'] }
     ]
   }
 };
