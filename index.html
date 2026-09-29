@@ -153,6 +153,27 @@ h1 span { color: var(--blue); }
 .market-note { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
 
 .hint { font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); margin-bottom: 10px; }
+
+/* new / updated labels */
+.tag { display: inline-block; font-size: 7px; font-family: var(--font-mono); border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; line-height: 1.3; }
+.tag-new { background: rgba(45,212,160,0.15); color: var(--teal); border: 1px solid rgba(45,212,160,0.35); }
+.tag-updated { background: rgba(240,180,41,0.13); color: var(--amber); border: 1px solid rgba(240,180,41,0.35); }
+.value-list .tag, .opp-type .tag, .dp-title .tag { font-size: 8px; margin-left: 0; margin-right: 6px; }
+.dp-title .tag { margin-left: 8px; margin-right: 0; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); margin-bottom: 14px; }
+.legend .tag { margin: 0 6px 0 0; }
+
+/* announcements */
+.news { margin-top: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+.news-title { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.news-item { display: grid; grid-template-columns: 78px 66px 1fr; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.news-item:last-child { border-bottom: none; }
+.news-date { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+.news-item .tag { margin: 0; justify-self: start; }
+.news-item a { color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--text-dim); font-weight: 600; }
+.news-item a:hover { color: var(--blue); }
+.news-affects { display: block; font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); margin-top: 2px; }
+@media (max-width: 600px) { .news-item { grid-template-columns: 1fr; gap: 2px; } }
 </style>
 </head>
 <body>
@@ -237,12 +258,17 @@ h1 span { color: var(--blue); }
     <div class="eco-right">
       <div class="map-label">// docker ecosystem — highlighted nodes = integration surface for selected partner type</div>
       <p class="hint">Click any highlighted node to see integration details and partnership opportunity</p>
+      <div class="legend">
+        <span><span class="tag tag-new">new</span>new product, feature, or announcement</span>
+        <span><span class="tag tag-updated">updated</span>existing component affected by recent announcements</span>
+        <span>as of Sep 29, 2026</span>
+      </div>
 
       <div class="tier">
         <div class="tier-label">Dev exp</div>
         <div class="node" data-id="desktop" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker Desktop</span></div>
-          <div class="node-desc">Local dev environment</div>
+          <div class="node-top"><span class="node-dot" style="background:#1a5fad"></span><span class="node-name">Docker Desktop<span class="tag tag-updated">updated</span></span></div>
+          <div class="node-desc">Local dev environment + Gordon AI</div>
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node deprecated" data-id="devenvs" onclick="selectNode(this)">
@@ -270,8 +296,8 @@ h1 span { color: var(--blue); }
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node" data-id="offload" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#0891b2"></span><span class="node-name">Docker Offload</span></div>
-          <div class="node-desc">Cloud-accelerated builds & runs</div>
+          <div class="node-top"><span class="node-dot" style="background:#0891b2"></span><span class="node-name">Docker Offload<span class="tag tag-updated">updated</span></span></div>
+          <div class="node-desc">Cloud builds, runs & K8s clusters</div>
           <span class="node-partner-badge">partner</span>
         </div>
       </div>
@@ -303,8 +329,8 @@ h1 span { color: var(--blue); }
       <div class="tier">
         <div class="tier-label">Images</div>
         <div class="node" data-id="hub" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Docker Hub</span></div>
-          <div class="node-desc">Public + private registry</div>
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Docker Hub<span class="tag tag-updated">updated</span></span></div>
+          <div class="node-desc">Registry for images, Kits & MCP servers</div>
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node" data-id="scout" onclick="selectNode(this)">
@@ -318,8 +344,8 @@ h1 span { color: var(--blue); }
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node" data-id="dhi" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Hardened Images (DHI)</span></div>
-          <div class="node-desc">Enterprise minimal images</div>
+          <div class="node-top"><span class="node-dot" style="background:#92600a"></span><span class="node-name">Hardened Images (DHI)<span class="tag tag-updated">updated</span></span></div>
+          <div class="node-desc">Free & open source + Enterprise tier</div>
           <span class="node-partner-badge">partner</span>
         </div>
       </div>
@@ -351,23 +377,61 @@ h1 span { color: var(--blue); }
       <div class="tier">
         <div class="tier-label">AI runtime</div>
         <div class="node" data-id="sbx" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker Sandboxes (SBX)</span></div>
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker Sandboxes (SBX)<span class="tag tag-updated">updated</span></span></div>
           <div class="node-desc">microVM isolation + sbx CLI</div>
           <span class="node-partner-badge">partner</span>
         </div>
+        <div class="node" data-id="cloudsbx" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Cloud Sandboxes<span class="tag tag-new">new</span></span></div>
+          <div class="node-desc">Docker-managed cloud agent runtime</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
+        <div class="node" data-id="kits" onclick="selectNode(this)">
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Kits (OCI spec)<span class="tag tag-new">new</span></span></div>
+          <div class="node-desc">Portable agent permissions as OCI images</div>
+          <span class="node-partner-badge">partner</span>
+        </div>
         <div class="node" data-id="aigovernance" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker AI Governance</span></div>
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">Docker AI Governance<span class="tag tag-updated">updated</span></span></div>
           <div class="node-desc">Centralized agent policy control</div>
           <span class="node-partner-badge">partner</span>
         </div>
         <div class="node" data-id="mcpgateway" onclick="selectNode(this)">
-          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">MCP Gateway</span></div>
+          <div class="node-top"><span class="node-dot" style="background:#7c3aed"></span><span class="node-name">MCP Gateway<span class="tag tag-updated">updated</span></span></div>
           <div class="node-desc">Policy layer for MCP tool calls</div>
           <span class="node-partner-badge">partner</span>
         </div>
       </div>
 
       <div class="detail-panel" id="detail" style="display:none"></div>
+
+      <div class="news">
+        <div class="news-title">// recent docker announcements</div>
+        <div class="news-item">
+          <span class="news-date">Sep 28, 2026</span><span class="tag tag-updated">updated</span>
+          <span><a href="https://releasebot.io/updates/docker" target="_blank" rel="noopener">Docker Desktop 4.93</a> — Enhanced Container Isolation and WSL fixes, Linux kernel 7.0.14, containerd 2.3.5 security update; recent releases also brought Gordon safety modes and one-click diagnosis.<span class="news-affects">affects: Docker Desktop</span></span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">Sep 24, 2026</span><span class="tag tag-new">new</span>
+          <span><a href="https://www.docker.com/blog/introducing-cloud-sandboxes-start-on-your-laptop-finish-in-the-cloud/" target="_blank" rel="noopener">Docker Cloud Sandboxes</a> — microVM agent sandboxes on Docker-managed infrastructure, 1–16 vCPUs, pay-as-you-go from $0.07/hr, <em>sbx move</em> between laptop and cloud.<span class="news-affects">affects: Cloud Sandboxes (new), Docker Sandboxes, AI Governance, MCP Gateway</span></span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">Sep 24, 2026</span><span class="tag tag-new">new</span>
+          <span><a href="https://www.docker.com/blog/docker-and-cncf-partner-on-an-open-spec-for-agent-permissions/" target="_blank" rel="noopener">Sandbox Kit Spec v3, headed to the CNCF</a> — agents, tools and access rules packaged as standard OCI images and published on Docker Hub and GitHub.<span class="news-affects">affects: Kits (new), Docker Sandboxes, Docker Hub, AI Governance</span></span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">Sep 22, 2026</span><span class="tag tag-new">new</span>
+          <span><a href="https://www.docker.com/blog/wearedevelopers-partner-customer-sessions-2026/" target="_blank" rel="noopener">Ecosystem partner Kits</a> — Docker built Kits with AWS, Box, Datadog, Dynatrace, JFrog, Palo Alto Networks and Snyk; partner sessions at WeAreDevelopers North America.<span class="news-affects">affects: Kits, Cloud Sandboxes</span></span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">Sep 7, 2026</span><span class="tag tag-updated">updated</span>
+          <span><a href="https://releasebot.io/updates/docker" target="_blank" rel="noopener">Docker Desktop 4.90</a> — Kubernetes cloud clusters can be started and stopped through Docker Offload.<span class="news-affects">affects: Docker Offload, Docker Desktop</span></span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">Dec 17, 2025</span><span class="tag tag-updated">updated</span>
+          <span><a href="https://www.docker.com/blog/docker-hardened-images-for-every-developer/" target="_blank" rel="noopener">Docker Hardened Images free and open source</a> — Apache 2.0 for everyone; DHI Enterprise and Extended Lifecycle Support are the paid tiers; adds Hardened MCP Servers.<span class="news-affects">affects: Hardened Images (DHI), MCP Gateway, Docker Hub</span></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -498,17 +562,17 @@ const MARKET = {
 };
 
 const PARTNERS = {
-  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop","sbx","mcpgateway","testcontainers","dhi"],                              color: "#5238b8" },
+  isv:      { name: "ISV / Software vendor",    highlights: ["extensions","hub","compose","desktop","sbx","kits","mcpgateway","testcontainers","dhi","cloudsbx"],           color: "#5238b8" },
   idp:      { name: "Identity provider",         highlights: ["accesstokens","orgmgmt","desktop","imagepolicy","aigovernance"],                                              color: "#5238b8" },
-  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub","sbx","testcontainers","offload","dhi"],                             color: "#0d7a5c" },
-  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop","aigovernance","mcpgateway","offload"],                  color: "#1a5fad" },
-  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs","sbx","offload","dhi"],                                     color: "#b83818" },
-  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli","aigovernance","sbx","dhi"],                                     color: "#92600a" },
-  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions","sbx","aigovernance","mcpgateway"],               color: "#993356" },
+  ci:       { name: "CI/CD platform",            highlights: ["buildkit","compose","cli","scout","hub","sbx","cloudsbx","kits","testcontainers","offload","dhi"],            color: "#0d7a5c" },
+  obs:      { name: "Observability platform",    highlights: ["extensions","engine","containerd","audit","desktop","aigovernance","mcpgateway","offload","cloudsbx","kits"], color: "#1a5fad" },
+  hosting:  { name: "Hosting / Cloud provider",  highlights: ["containerd","compose","hub","buildkit","devenvs","sbx","kits","offload","dhi"],                              color: "#b83818" },
+  iac:      { name: "Infrastructure as Code",    highlights: ["engine","compose","orgmgmt","devenvs","cli","aigovernance","sbx","cloudsbx","kits","dhi"],                    color: "#92600a" },
+  security: { name: "Security / scanning",       highlights: ["scout","buildkit","dhi","imagepolicy","audit","extensions","sbx","cloudsbx","kits","aigovernance","mcpgateway"], color: "#993356" },
   ml:       { name: "ML platforms",              highlights: ["engine","containerd","buildkit","hub","devenvs","compose","sbx","mcpgateway","offload","dhi"],               color: "#0d7a5c" },
-  ai:       { name: "AI agents",                 highlights: ["engine","compose","hub","extensions","cli","devenvs","sbx","aigovernance","mcpgateway","dhi"],               color: "#5238b8" },
-  ide:      { name: "IDE / code editors",        highlights: ["devenvs","extensions","desktop","cli","compose","engine","sbx","testcontainers"],                           color: "#0d7a5c" },
-  aigov:    { name: "AI Governance",             highlights: ["aigovernance","mcpgateway","sbx","audit","accesstokens","orgmgmt","dhi"],                                   color: "#7c3aed" }
+  ai:       { name: "AI agents",                 highlights: ["engine","compose","hub","extensions","cli","devenvs","sbx","cloudsbx","kits","aigovernance","mcpgateway","dhi"], color: "#5238b8" },
+  ide:      { name: "IDE / code editors",        highlights: ["devenvs","extensions","desktop","cli","compose","engine","sbx","cloudsbx","kits","testcontainers"],           color: "#0d7a5c" },
+  aigov:    { name: "AI Governance",             highlights: ["aigovernance","mcpgateway","sbx","cloudsbx","kits","audit","accesstokens","orgmgmt","dhi"],                  color: "#7c3aed" }
 };
 
 const NODE_DATA = {
@@ -531,17 +595,19 @@ const NODE_DATA = {
     }
   },
   hub: {
-    icon: "🌐", name: "Docker Hub",
+    icon: "🌐", name: "Docker Hub", tag: "updated",
     tagline: "Distribute your software to 14M+ images consumed by millions of developers",
     values: [
       "Publisher program lets ISVs list verified images in Docker Hub Verified Publisher catalog",
       "Pull analytics give publishers visibility into how many users consume their images",
       "14M+ images makes Hub the default discovery surface for container-native software",
       "Hub webhooks enable pub/sub distribution: new image tag triggers any downstream system",
-      "Docker Content Trust lets publishers sign images and communicate provenance to consumers"
+      "Docker Content Trust lets publishers sign images and communicate provenance to consumers",
+      { tag: "new", text: "Kits for AI agents are standard OCI images published on Docker Hub (and GitHub) the same way as container images; hosting public images and Kits in Cloud Sandboxes is free" },
+      { tag: "updated", text: "Hardened Images are free and open source on Hub, with a catalog of 1,000+ images and Helm charts that now includes Hardened MCP Servers" }
     ],
     opps: {
-      isv:     { type: "Distribution channel",        desc: "Become a Verified Publisher. Your containerized product appears in Hub search for millions of developers evaluating solutions.", tags: ["Verified Publisher","Hub Marketplace","DCT"] },
+      isv:     { tag: "updated", type: "Distribution channel",        desc: "Become a Verified Publisher. Your containerized product appears in Hub search for millions of developers evaluating solutions — and you can now publish an agent-ready Kit next to your images.", tags: ["Verified Publisher","Hub Marketplace","DCT","Kits"] },
       hosting: { type: "Registry mirror",             desc: "Mirror Hub content in your cloud region to reduce pull latency and egress costs for mutual customers.", tags: ["Registry mirror","Pull-through cache","OCI spec"] },
       ci:      { type: "CI pipeline integration",     desc: "CI platforms that authenticate Hub pulls natively get rate-limit bypass and can surface image metadata in pipeline UI.", tags: ["Hub API","Authenticated pulls","Webhook"] },
       ml:      { type: "Model image distribution",    desc: "ML platforms can publish pre-built model serving images (TorchServe, TF Serving, vLLM) on Hub for one-pull deployment.", tags: ["Verified Publisher","Model images","Hub API"] },
@@ -568,14 +634,17 @@ const NODE_DATA = {
     }
   },
   desktop: {
-    icon: "🖥", name: "Docker Desktop",
+    icon: "🖥", name: "Docker Desktop", tag: "updated",
     tagline: "The primary touchpoint for 20M+ developers on Mac, Windows, and Linux",
     values: [
       "20M+ active installs — the largest desktop developer tool install base across all platforms",
       "Organization licensing and management enable scalable enterprise deployment",
       "SSO enforcement and SCIM support make it enterprise IT-manageable at scale",
       "Docker Desktop is where developers first encounter container tooling — high-awareness partner surface",
-      "Extensions marketplace creates an in-product distribution channel for partner solutions"
+      "Extensions marketplace creates an in-product distribution channel for partner solutions",
+      { tag: "new", text: "Gordon, Docker's built-in AI assistant, now runs as a right-side drawer with one-click issue diagnosis, inline approval cards, custom permission rules, and a three-mode safety system (Strict, Balanced, Autonomous)" },
+      { tag: "updated", text: "Desktop 4.93 (Sep 28, 2026) adds Enhanced Container Isolation and WSL reliability fixes, Linux kernel 7.0.14, and a containerd 2.3.5 security update; 4.91 bundled Docker Engine 29.8.0 and Compose 5.5.1" },
+      { tag: "updated", text: "Sandboxes no longer depend on Desktop: sbx is a standalone CLI, and the experimental Desktop sandbox plugin was removed in 4.80" }
     ],
     opps: {
       idp: { type: "SSO enforcement partner", desc: "Docker Business enforces SSO for all Desktop logins. Co-sell to enterprise accounts where you already have an identity footprint.", tags: ["SAML 2.0","OIDC","Docker Business"] },
@@ -672,14 +741,16 @@ const NODE_DATA = {
     }
   },
   offload: {
-    icon: "☁️", name: "Docker Offload",
+    icon: "☁️", name: "Docker Offload", tag: "updated",
     tagline: "Run docker build and docker run in the cloud from your local CLI — no infrastructure to manage",
     values: [
       "Transparently redirects docker build and docker run commands from the local machine to cloud infrastructure — developers use the same CLI they already know",
       "Eliminates resource contention on developer laptops during heavy builds or resource-intensive workloads (ML inference, large integration tests)",
       "Cloud runners have more CPU, memory, and network bandwidth than local machines — build times drop dramatically, especially for multi-platform images",
       "Integrates with Docker Desktop via a settings toggle — no CLI changes, no new tooling, no config files to learn",
-      "Pairs with Testcontainers Cloud to offload both builds and test container infrastructure simultaneously, maximizing local machine availability"
+      "Pairs with Testcontainers Cloud to offload both builds and test container infrastructure simultaneously, maximizing local machine availability",
+      { tag: "new", text: "Docker Desktop 4.90 lets developers start and stop Kubernetes cloud clusters through Docker Offload, with cluster-management improvements in 4.92" },
+      { tag: "new", text: "Cloud Sandboxes is the agent-execution counterpart: Offload moves builds and containers to the cloud, Cloud Sandboxes moves AI agent sessions" }
     ],
     opps: {
       hosting:  { type: "Cloud compute partner",    desc: "Cloud providers can partner to supply the compute layer behind Docker Offload — customers get low-latency build and run offload to infrastructure in their existing cloud account.", tags: ["Offload backend","Cloud compute","Regional runners","Docker Offload API"] },
@@ -740,19 +811,20 @@ const NODE_DATA = {
     }
   },
   dhi: {
-    icon: "🏢", name: "Docker Hardened Images (DHI)",
-    tagline: "Minimal, distroless enterprise images with CVE-near-zero SLA, cryptographic provenance, and built-in compliance",
+    icon: "🏢", name: "Docker Hardened Images (DHI)", tag: "updated",
+    tagline: "Minimal, distroless hardened images — free and open source for everyone, with DHI Enterprise for SLAs, compliance, and customization",
     values: [
-      "Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; dramatically reduces the attack surface of every container image",
-      "CVE-near-zero SLA: Docker patches DHIs within 24 hours of a disclosed vulnerability in a base dependency — no waiting for upstream OS vendor schedules",
-      "Signed with Cosign and shipped with SBOM and provenance attestations baked in — every DHI image is cryptographically traceable from source to deployment",
-      "Drop-in replacements for popular Official Images (nginx, node, python, java) — same tags and interface, hardened internals, no Dockerfile changes required",
-      "Compliance-ready for SOC 2, PCI-DSS, NIST 800-190, and FedRAMP container security controls out of the box"
+      { tag: "new", text: "Free and open source under Apache 2.0 for all developers — no longer an enterprise-only product. 1,000+ hardened images and Helm charts, including new Hardened MCP Servers (e.g. MongoDB, Grafana, GitHub)" },
+      "Stripped to the bare minimum — no shell, no package manager, no extraneous binaries; up to 95% smaller images and a dramatically reduced attack surface",
+      { tag: "updated", text: "CVE remediation is tiered: the free tier has no SLA (Docker does not hide unpatched CVEs), while DHI Enterprise adds a 7-day SLA for critical CVEs, with a roadmap to 1 day or less" },
+      "Signed and shipped with SBOM and provenance attestations, so every image is traceable from source to deployment; DHI Enterprise builds meet SLSA Build Level 3",
+      { tag: "updated", text: "Drop-in replacements for popular Official Images (nginx, node, python, java), now built on familiar Alpine and Debian foundations — an experimental AI assistant recommends the matching hardened image" },
+      { tag: "updated", text: "DHI Enterprise adds FIPS/STIG-ready images, CIS benchmarks, unlimited customization (certs, keys, packages, scripts) via a build service, and paid Extended Lifecycle Support (up to 5 years past upstream EOL)" }
     ],
     opps: {
-      security: { type: "Compliance co-sell",        desc: "Position DHI as the foundation for your compliance scanning product — start from a CVE-near-zero base, then validate the application layer. Joint reference architecture for PCI-DSS and SOC 2 workloads.", tags: ["DHI","Cosign","SBOM attestation","OPA","Kyverno"] },
+      security: { tag: "updated", type: "Compliance co-sell",        desc: "Position DHI as the foundation for your scanning product — the free tier gives every customer a minimal, transparent base with SBOMs, and DHI Enterprise (FIPS/STIG-ready, CIS, 7-day critical-CVE SLA) covers regulated workloads. Validate the application layer on top.", tags: ["DHI","DHI Enterprise","Cosign","SBOM attestation","OPA","Kyverno"] },
       hosting:  { type: "Certified workload base",   desc: "Cloud providers that pre-certify workloads built on DHI as security-baseline compliant create a differentiated enterprise offering and reduce shared-responsibility audit surface for mutual customers.", tags: ["DHI","OPA Gatekeeper","Admission policy","EKS","GKE","AKS"] },
-      isv:      { type: "Enterprise image tier",     desc: "Publish a DHI-compatible variant of your software image alongside the standard version. Enterprise buyers with strict image policies can adopt your product without security exceptions or waivers.", tags: ["DHI program","Cosign","Verified Publisher","SBOM"] },
+      isv:      { tag: "updated", type: "Hardened image tier",     desc: "With DHI now free and open source, publish a DHI-compatible variant of your software image alongside the standard version. Buyers with strict image policies can adopt your product without security exceptions or waivers; Hardened MCP Servers show the same model for agent tooling.", tags: ["DHI program","Apache 2.0","Verified Publisher","SBOM","Hardened MCP Servers"] },
       ci:       { type: "Hardened base in pipelines", desc: "CI platforms can detect FROM instructions in Dockerfiles and recommend DHI equivalents, then verify DHI signatures via Scout policy checks as a mandatory gate before image promotion.", tags: ["Docker Scout","DHI","Cosign verify","FROM detection","Pipeline gate"] },
       iac:      { type: "Enforced base image policy", desc: "IaC tools and admission controllers (OPA Gatekeeper, Kyverno) can enforce DHI-only policies at deploy time — any image not based on a signed DHI is rejected before it reaches production.", tags: ["OPA Gatekeeper","Kyverno","Terraform","Admission webhook","Sigstore"] },
       ml:       { type: "Minimal ML serving base",   desc: "ML model serving containers built on DHI (python-slim, java) start from a near-zero CVE baseline — critical for multi-tenant inference infrastructure where a vulnerable base image affects every model endpoint.", tags: ["DHI python","DHI java","Model serving","TorchServe","vLLM"] },
@@ -825,36 +897,41 @@ const NODE_DATA = {
     }
   },
   sbx: {
-    icon: "🧱", name: "Docker Sandboxes (SBX)",
-    tagline: "microVM isolation for AI agents + sbx CLI for launching, managing, and governing sandboxes",
+    icon: "🧱", name: "Docker Sandboxes (SBX)", tag: "updated",
+    tagline: "microVM isolation for AI agents + sbx CLI for launching, managing, and governing sandboxes — locally or in the cloud",
     values: [
       "Wraps AI coding agents (Claude Code, Codex, Gemini CLI, Copilot) in lightweight microVMs — a hard hypervisor boundary between agent and host OS prevents container escapes",
       "Each sandbox has its own Docker daemon, filesystem, and network stack; agents install packages, build images, and modify configs without touching your machine",
       "sbx run <agent> launches any agent in a single command; the interactive TUI dashboard shows live sandbox status, network activity, resource usage, and active governance policies",
-      "sbx kits let partners package a pre-configured sandbox (agent + toolchain + credentials + network policy) as a reusable template distributable by a single kit name",
-      "Branch mode creates a Git-worktree-backed sandbox per task so multiple agents work in parallel on the same repo without conflicting changes; sbx cp provides bidirectional host-sandbox file transfer"
+      { tag: "updated", text: "Kits are now the open Sandbox Kit Spec v3 — standard, pinnable OCI images that package an agent's network rules, credentials, and volumes, instead of a Docker-specific template (see Kits)" },
+      "Branch mode creates a Git-worktree-backed sandbox per task so multiple agents work in parallel on the same repo without conflicting changes; sbx cp provides bidirectional host-sandbox file transfer",
+      { tag: "new", text: "The same CLI now targets Docker Cloud Sandboxes: sbx --cloud run <agent>, and sbx move <project> --to cloud (or back) carries filesystem state between laptop and cloud" },
+      { tag: "new", text: "Ready-to-run kits for Claude Code, Codex, Copilot, Antigravity, Open Code, and Hermes; a proxy injects centrally stored secrets per request so agents never see real credentials" },
+      { tag: "updated", text: "sbx is a standalone install (brew install docker/tap/sbx, sbx login) — local sandboxes remain free and do not require Docker Desktop" }
     ],
     opps: {
       aigov:    { type: "Governed execution",       desc: "AI Governance policies defined in the Admin Console are enforced inside every SBX sandbox — partners building compliance tooling consume sandbox audit events for policy verification.", tags: ["sbx policy","Audit events","Governance API","Compliance"] },
       ai:       { type: "Safe agent execution",     desc: "AI agent framework partners certifying their agents run inside Docker Sandboxes can offer enterprise customers a hardened, auditable execution environment as a first-class deployment option.", tags: ["sbx run","Agent isolation","sbx kits","Credential injection"] },
       security: { type: "Sandbox security layer",   desc: "Security partners integrate with SBX network egress policies and filesystem mount controls to enforce data loss prevention and threat detection at the microVM boundary.", tags: ["sbx policy network","sbx policy fs","eBPF","Egress proxy"] },
       ci:       { type: "Isolated CI agent tasks",  desc: "CI platforms that invoke sbx run as a pipeline step execute AI-assisted code generation or refactoring inside a clean microVM per job — no state bleeds between runs.", tags: ["sbx run","sbx rm","GitHub Actions","GitLab CI","Pipeline isolation"] },
-      hosting:  { type: "Hosted sandbox service",   desc: "Cloud providers can offer Docker Sandboxes as a managed service — customers get a hosted sbx endpoint and run agents without local microVM setup, billed per sandbox-hour.", tags: ["sbx API","Remote sandbox","Hosted microVM","Fly Machines"] },
+      hosting:  { tag: "updated", type: "Sandbox egress target",   desc: "Docker now operates managed Cloud Sandboxes itself, so the hosting opportunity shifts: be the approved destination agents reach — private endpoints, registries, and internal APIs allowlisted through sbx network policy.", tags: ["sbx policy network","Private endpoints","Cloud Sandboxes","OCI registry"] },
       iac:      { type: "Sandbox-as-code",          desc: "IaC tools can script sandbox lifecycle via the sbx CLI — create sandboxes, inject credentials, run agents, copy outputs, and destroy, fully automated as part of infrastructure pipelines.", tags: ["sbx CLI","sbx run","sbx cp","sbx rm","Terraform exec"] },
       ml:       { type: "Isolated ML execution",    desc: "ML platforms run training jobs and inference tasks inside SBX sandboxes so untrusted model code is hardware-isolated from the host — critical for multi-tenant ML environments.", tags: ["sbx run","GPU passthrough","microVM","Model sandbox"] },
       ide:      { type: "IDE sandbox launch",       desc: "IDEs integrate the sbx CLI to launch agent sandboxes on the current workspace with one click — AI coding agents run fully isolated from the host OS, controlled from inside the editor.", tags: ["sbx CLI","sbx run","IDE extension","Workspace mount"] },
-      isv:      { type: "sbx kit distribution",     desc: "ISVs publish sbx kits that configure a sandbox with their toolchain pre-installed — developers adopt the product with a single sbx run <kit-name> command, no manual setup.", tags: ["sbx kits","sbx-kits-contrib","Docker Hub","Kit registry"] }
+      isv:      { tag: "updated", type: "sbx kit distribution",     desc: "ISVs publish Kits that configure a sandbox with their toolchain pre-installed — developers adopt the product with a single sbx run <kit-name> command, locally or in Cloud Sandboxes. Docker built launch Kits with AWS, Box, Datadog, Dynatrace, JFrog, Palo Alto Networks, and Snyk.", tags: ["Kit spec v3","OCI image","Docker Hub","sbx --cloud run"] }
     }
   },
   aigovernance: {
-    icon: "⚖️", name: "Docker AI Governance",
+    icon: "⚖️", name: "Docker AI Governance", tag: "updated",
     tagline: "Centralized control plane for AI agent policy — network, filesystem, credentials, and MCP tools",
     values: [
       "Admins define policy once in the Docker Admin Console; it propagates automatically to every developer machine without per-machine setup",
       "Four control surfaces in one console: network access (domain/CIDR allow-deny), filesystem mounts (read-only or read-write), credential injection, and MCP tool permissions",
       "Organization governance overrides local sbx policies — developers cannot bypass centrally-defined security rules",
       "Every agent session produces a full audit trail of network calls, filesystem access, and MCP tool invocations for compliance reporting",
-      "Available as a separate paid subscription on top of Docker Business, purpose-built for enterprises deploying AI agents at scale"
+      "Available as a separate paid subscription on top of Docker Business, purpose-built for enterprises deploying AI agents at scale",
+      { tag: "updated", text: "Now positioned as the enterprise counterpart to Cloud Sandboxes: individual accounts get endpoint-level network policy, and centralized governance for cloud sandboxes is coming through AI Governance" },
+      { tag: "new", text: "Access rules now travel inside Kits, so policy is enforced identically wherever a Kit runs — laptop or cloud — rather than only where the console reaches" }
     ],
     opps: {
       aigov:    { type: "Governance platform",      desc: "AI governance platform partners consume Docker AI Governance audit events via API to correlate agent activity with broader enterprise AI risk posture and regulatory compliance frameworks.", tags: ["Governance API","Audit export","EU AI Act","NIST AI RMF"] },
@@ -866,14 +943,17 @@ const NODE_DATA = {
     }
   },
   mcpgateway: {
-    icon: "🔀", name: "MCP Gateway",
+    icon: "🔀", name: "MCP Gateway", tag: "updated",
     tagline: "Policy enforcement chokepoint for all Model Context Protocol tool calls",
     values: [
       "Sits between AI agents and MCP servers, inspecting and enforcing policy on every tool call before it reaches external services",
       "Admins allowlist or blocklist specific MCP tools and servers in the Docker Admin Console — agents can only call approved tools",
       "Full audit log of every MCP tool invocation: which agent called which tool, with what parameters, and what was returned",
       "As the MCP ecosystem grows (more servers, more tools, more enterprise integrations), the gateway becomes the universal policy layer for the entire MCP supply chain",
-      "Integrates with Docker AI Governance so MCP tool permissions are part of the same centralized policy as network and filesystem controls"
+      "Integrates with Docker AI Governance so MCP tool permissions are part of the same centralized policy as network and filesystem controls",
+      { tag: "updated", text: "The gateway runs MCP servers as isolated containers behind a single point of control, ships out of the box in Docker Desktop, and is open source for use with any community edition of Docker" },
+      { tag: "new", text: "In Cloud Sandboxes, MCP servers (Jira, Linear, Grafana, incident.io, or any HTTP endpoint) are connected once and every agent reaches them through a single gateway" },
+      { tag: "new", text: "Hardened MCP Servers (e.g. MongoDB, Grafana, GitHub) join the DHI catalog as a trusted source for gateway-approved tools" }
     ],
     opps: {
       aigov:    { type: "MCP policy integration",   desc: "AI governance platforms consume MCP Gateway audit logs to demonstrate to auditors exactly which AI tools accessed which enterprise data and under what authorization.", tags: ["MCP audit log","Tool call policy","Governance API","EU AI Act"] },
@@ -881,7 +961,51 @@ const NODE_DATA = {
       security: { type: "Tool call inspection",     desc: "Security partners integrate with MCP Gateway to inspect tool call payloads for data exfiltration patterns, prompt injection, and policy violations before calls are executed.", tags: ["Tool call inspection","DLP","Prompt injection","MCP policy"] },
       obs:      { type: "MCP observability",        desc: "Observability platforms ingesting MCP Gateway telemetry surface per-tool latency, error rates, and usage patterns — giving teams visibility into their AI agent tool dependencies.", tags: ["MCP telemetry","Tool latency","OpenTelemetry","Datadog"] },
       ml:       { type: "ML tool governance",       desc: "ML platforms exposing data retrieval and model management as MCP tools use the Gateway to enforce which models and datasets AI coding agents can access during a session.", tags: ["MCP tools","Data access policy","Model access","ML tool catalog"] },
-      isv:      { type: "MCP server distribution",  desc: "ISVs publishing their product capabilities as MCP servers can certify Gateway compatibility and appear in Docker's approved MCP catalog — reaching every enterprise agent deployment.", tags: ["MCP server","Gateway certification","Approved catalog","ISV listing"] }
+      isv:      { tag: "updated", type: "MCP server distribution",  desc: "ISVs publishing their product capabilities as MCP servers can certify Gateway compatibility and appear in Docker's approved MCP catalog — reaching every enterprise agent deployment. Cloud Sandboxes already connect Jira, Linear, Grafana, and incident.io through the gateway, and Hardened MCP Servers set the bar for a trusted listing.", tags: ["MCP server","Hardened MCP Servers","Gateway certification","Approved catalog","Cloud Sandboxes"] }
+    }
+  },
+  cloudsbx: {
+    icon: "⛅", name: "Docker Cloud Sandboxes", tag: "new",
+    tagline: "The same microVM-isolated agent sandboxes on Docker-managed cloud infrastructure — start on your laptop, finish in the cloud (launched Sep 24, 2026)",
+    values: [
+      "Runs each agent in a microVM on Docker-managed infrastructure that boots in low hundreds of milliseconds, with the same CLI, trust model, and Kits as local sandboxes — sbx --cloud run <agent>, or the web console",
+      "Elastic sizes from Micro (1 vCPU / 2 GiB, $0.07/hr) to XL (16 vCPU / 32 GiB, $1.12/hr), pay-as-you-go metered per second; paused sandboxes are free, sessions default to 1 hour and run up to 24",
+      "sbx move <project> --to cloud captures filesystem state and recreates it at the destination (and back), so long jobs keep running after the laptop closes; 100+ parallel tasks need no provisioning",
+      "Centralized secrets are injected per request by a proxy so agents never see real credentials, with endpoint-level network policy and MCP servers connected once behind a single gateway",
+      "Available on Docker Personal and Pro accounts (sbx 0.45.1 or later); enterprise-wide governance for cloud sandboxes is coming through Docker AI Governance"
+    ],
+    opps: {
+      isv:      { type: "Agent-ready product Kit",      desc: "Publish a Kit so your CLI or API is pre-installed and permissioned for agents; Cloud Sandboxes runs it on demand with no local setup, letting prospects try your product inside an agent in one command.", tags: ["Kits","sbx --cloud run","Docker Hub","Web console"] },
+      ci:       { type: "Unattended agent jobs",        desc: "Pipelines trigger sbx --cloud run for long refactor or test-fix tasks on Docker-managed capacity — 100+ in parallel — instead of self-hosted runners, then pull results back with sbx move.", tags: ["sbx --cloud run","sbx move","Parallel tasks","Pipeline isolation"] },
+      obs:      { type: "Agent workload telemetry",     desc: "Cloud sandbox sessions add new signals — runtime, size, network calls — to correlate with agent traces. Datadog and Dynatrace already built Kits for their tools.", tags: ["Session metering","Network policy logs","Kits","OpenTelemetry"] },
+      iac:      { type: "Cloud sandbox-as-code",        desc: "The sbx CLI is scripted identically for local and cloud: pin a Kit by digest, choose a size from Micro to XL, run the agent, and destroy the sandbox as an ephemeral environment.", tags: ["sbx CLI","OCI digest","Micro–XL sizes","Terraform exec"] },
+      security: { type: "Isolated detonation and scanning", desc: "Run untrusted or agent-generated code in a per-task microVM and enforce controls at its boundary: endpoint-level network policy and proxy-injected secrets. Snyk demoed its Evo Agentic Development Security Sandbox Kit.", tags: ["Network policy","Secret injection proxy","Snyk Evo Kit","MCP gateway"] },
+      ai:       { type: "Hosted, model-neutral runtime", desc: "Agent frameworks and harnesses get a hosted runtime that is neutral about model and harness — ship your agent as a Kit and it runs locally or in the cloud unchanged, alongside Claude Code, Codex, Copilot, and others.", tags: ["Kits","sbx --cloud run","Harness-neutral","Agent isolation"] },
+      ide:      { type: "Hand off to the cloud",        desc: "IDEs launch a sandbox on the current workspace and offer 'move to cloud' via sbx move, so long agent tasks keep running when the developer closes their laptop.", tags: ["sbx move","sbx --cloud run","IDE extension","Web console"] },
+      aigov:    { type: "Governed cloud execution",     desc: "Centralized governance for Cloud Sandboxes is coming via Docker AI Governance — governance platforms can prepare to ingest sandbox policy and audit events for cloud sessions alongside local ones.", tags: ["AI Governance","Audit events","Network policy","Governance API"] }
+    }
+  },
+  kits: {
+    icon: "🧰", name: "Kits (OCI spec)", tag: "new",
+    tagline: "Open Sandbox Kit Spec v3 — an agent's network rules, credentials, and volumes packaged as a standard, pinnable OCI image, headed to the CNCF (Sep 24, 2026)",
+    values: [
+      "A Kit packages an agent, its tools, and its access rules as one shareable artifact, built as a standard OCI image — no proprietary format and no vendor lock-in",
+      "Access rules travel inside the Kit and are enforced everywhere it runs, locally or in Cloud Sandboxes — deterministic policies agents cannot ignore or change",
+      "Kits snap together from mixins, so enterprises standardize shared components while teams customize their own workflows",
+      "Built and shipped with existing container tooling and published on Docker Hub and GitHub the same way as container images",
+      "Docker is submitting the spec to the Cloud Native Computing Foundation so agent permissions become a neutral, vendor-independent standard built on OCI",
+      "Launch Kits were built with AWS, Box, Datadog, Dynatrace, JFrog, Palo Alto Networks, and Snyk"
+    ],
+    opps: {
+      isv:      { type: "Publish a Kit",                desc: "Ship your product as a Kit on Docker Hub or GitHub: agent, your tool, and the exact network and credential rules it needs. Box, Datadog, Dynatrace, JFrog, Palo Alto Networks, Snyk, and AWS already have Kits.", tags: ["Kit spec v3","Docker Hub","OCI image","Mixins"] },
+      ci:       { type: "Pin Kits in pipelines",        desc: "Reference Kits by digest in pipeline steps so every agent job runs with identical, reviewed permissions, promoted through the same registry flow as container images.", tags: ["OCI digest","Registry promotion","sbx run","Pipeline gate"] },
+      obs:      { type: "Observability Kit",            desc: "Package collector and agent configuration (as Datadog and Dynatrace have) so agents in any sandbox emit traces and query telemetry through pre-approved endpoints only.", tags: ["Kits","Approved endpoints","OpenTelemetry","Datadog","Dynatrace"] },
+      hosting:  { type: "OCI registry for Kits",        desc: "Kits are ordinary OCI images, so any OCI registry can host and mirror them — cloud registries (AWS has a Kit) can be the distribution point for enterprise-internal Kits behind Image Access Management allowlists.", tags: ["OCI registry","ECR","Registry mirror","Image Access Mgmt"] },
+      iac:      { type: "Kits as versioned artifacts",  desc: "Manage Kit versions and mixins as code: review changes to network and credential rules in pull requests and promote them through environments like any image.", tags: ["OCI digest","Mixins","GitOps","Terraform"] },
+      security: { type: "Permissioned security Kits",   desc: "Ship scanners and guardrails as Kits so tooling and its access rules deploy together and are enforced identically everywhere. Snyk demoed its Evo sandbox Kit; Palo Alto Networks showed agent-activity investigation in Cortex XSIAM.", tags: ["Kit spec v3","Snyk Evo Kit","Cortex XSIAM","Access rules"] },
+      ai:       { type: "Certify agents as Kits",       desc: "Package your agent framework as a Kit so it runs in any Docker sandbox with declared permissions; the CNCF-track spec makes 'what this agent may touch' portable across vendors.", tags: ["Kit spec v3","CNCF","Agent certification","sbx run"] },
+      ide:      { type: "Kit-aware launch",             desc: "IDEs can list available Kits and launch a sandbox from one, showing the network, credential, and volume rules before the agent starts.", tags: ["sbx run","Kit spec v3","Permission preview","IDE extension"] },
+      aigov:    { type: "Portable policy standard",     desc: "Kits embed access rules in the artifact and the spec is heading to the CNCF — governance platforms can map their policy and audit models onto a vendor-neutral permission format.", tags: ["CNCF","Kit spec v3","AI Governance","NIST AI RMF"] }
     }
   }
 };
@@ -948,6 +1072,14 @@ function selectNode(el) {
   renderPanel(NODE_DATA[id]);
 }
 
+function tagHtml(t) {
+  return t ? `<span class="tag tag-${t}">${t}</span>` : "";
+}
+
+function valueHtml(v) {
+  return typeof v === "string" ? v : `${tagHtml(v.tag)}${v.text}`;
+}
+
 function renderPanel(d) {
   const opp = d.opps[activePartner] || Object.values(d.opps)[0];
   const m = MARKET[activePartner];
@@ -960,22 +1092,22 @@ function renderPanel(d) {
     <div class="dp-header">
       <span class="dp-icon">${d.icon}</span>
       <div>
-        <div class="dp-title">${d.name}</div>
+        <div class="dp-title">${d.name}${tagHtml(d.tag)}</div>
         <div class="dp-sub">${d.tagline}</div>
       </div>
       <button class="close-btn" onclick="closePanel()">close</button>
     </div>
     <div class="dp-body">
       <div class="dp-col">
-        <div class="col-label">// ecosystem value — 5 key points</div>
+        <div class="col-label">// ecosystem value — key points</div>
         <ul class="value-list">
-          ${d.values.map(v => `<li>${v}</li>`).join("")}
+          ${d.values.map(v => `<li>${valueHtml(v)}</li>`).join("")}
         </ul>
       </div>
       <div class="dp-col">
         <div class="col-label">// partner opportunity — ${partner.name}</div>
         <div class="opp-item" style="border-left-color:${partner.color}">
-          <div class="opp-type">${opp.type}</div>
+          <div class="opp-type">${tagHtml(opp.tag)}${opp.type}</div>
           <div class="opp-desc">${opp.desc}</div>
           <div class="opp-tags">${opp.tags.map(t => `<span class="opp-tag">${t}</span>`).join("")}</div>
         </div>

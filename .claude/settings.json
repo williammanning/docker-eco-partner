@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.helpnetsecurity.com)",
+      "Bash(python3 -)",
+      "Bash(node /private/tmp/claude-502/-Users-williammanning-Documents-GitHub-docker-eco-partner/890a768f-819b-46c8-8f6c-1aac78933bfc/scratchpad/chk.js)",
+      "Bash(python3 -m http.server 8765 --bind 0.0.0.0)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8765/index.html)",
+      "mcp__MCP_DOCKER__browser_navigate",
+      "mcp__MCP_DOCKER__browser_click",
+      "mcp__MCP_DOCKER__browser_evaluate",
+      "Bash(pkill -f \"http.server 8765\")"
+    ]
+  }
+}
