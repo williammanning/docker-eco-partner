@@ -9,7 +9,11 @@
       "mcp__MCP_DOCKER__browser_navigate",
       "mcp__MCP_DOCKER__browser_click",
       "mcp__MCP_DOCKER__browser_evaluate",
-      "Bash(pkill -f \"http.server 8765\")"
+      "Bash(pkill -f \"http.server 8765\")",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git fetch *)",
+      "Bash(gh api *)"
     ]
   }
 }
